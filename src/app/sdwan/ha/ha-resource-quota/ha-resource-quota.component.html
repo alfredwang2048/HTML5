@@ -1,0 +1,26 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight">
+    <form class="form-container" [formGroup]="resourceQuotaForm">
+
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">业务网段数量：<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <input class="form-control" formControlName="serviceCidrNum" placeholder="请输入数量">
+        </div>
+        <div class="form-error" *ngIf="serviceCidrNum.invalid && (serviceCidrNum.dirty || serviceCidrNum.touched)">
+          <p class="error" *ngIf="serviceCidrNum.errors['required']">数量必填</p>
+          <p class="error" *ngIf="serviceCidrNum.errors['pattern']">格式不正确</p>
+        </div>
+      </div>
+
+    </form>
+    <div class="btn-footer">
+          <button class="btn-default" (click)="cancel()">取消</button>
+          <button class="btn-primary" (click)="confirm()" [disabled]="resourceQuotaForm.invalid">确定</button>
+        </div>
+  </app-w-dialog>
+</div>
+

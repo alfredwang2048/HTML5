@@ -1,0 +1,49 @@
+:host
+  display: inline-block
+.form-container
+  padding: 15px 15px 0
+  .form-group
+    &::after
+      display: table-cell
+      content: ''
+      clear: both
+    .form-label
+      width: 100px
+    .form-control
+      width: 248px
+    .form-error
+      margin-left: 100px
+    .cascader-host
+      width: 248px
+    .hasUnitInput
+      width: 80px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 10px;
+  .btn-container
+    background: #e1eef0
+.raidBox .raidLists
+  display: inline-block
+  width: 250px
+  span
+    display: inline-block
+    height: 30px
+    line-height: 30px
+    padding: 0 8px
+    margin-right: 10px
+    color: #6e7880
+    background: #c7cfd140
+    border: 1px solid transparent
+    cursor: pointer
+    -webkit-transition: all .3s ease-in-out
+    -moz-transition: all .3s ease-in-out
+    -ms-transition: all .3s ease-in-out
+    -o-transition: all .3s ease-in-out
+    transition: all .3s ease-in-out
+    &.selected, &:hover
+      color: #00c1e0
+      background: #bcedf561
+      border-color: #00c1e0
+.form-control-text
+  display: inline-block;
+  line-height: 30px;

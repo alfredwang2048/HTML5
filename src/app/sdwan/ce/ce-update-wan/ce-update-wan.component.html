@@ -1,0 +1,57 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight">
+    <form class="form-container" [formGroup]="updateCeWanForm">
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">端口:</span>
+        </div>
+        <div class="form-model">
+          <span class="form-label">{{selectedPort?.name}}</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">是否启用端口<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <select class="form-control" formControlName="isOpenPort">
+            <option *ngFor="let item of isOpenPortList" [value]="item.value">{{item.name}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="isOpenPort.value == 'Enabled'">
+        <div class="form-name">
+          <span class="form-label">IP获取方式<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <select class="form-control" formControlName="protocol">
+            <option *ngFor="let item of protocols" [value]="item.value">{{item.name}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="isOpenPort.value == 'Enabled' && protocol.value == 'STATIC'">
+        <div class="form-name">
+          <span class="form-label">IP<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <input class="form-control" formControlName="ipCidr" placeholder="请输入ip">
+        </div>
+        <div class="form-error" *ngIf="isShowTips">
+          <p class="error" >ip必填</p>
+        </div>
+      </div>
+
+
+    </form>
+    <div class="btn-footer">
+      <button class="btn-default" (click)="cancel()">取消</button>
+      <button class="btn-primary" (click)="confirm()">确定</button>
+    </div>
+  </app-w-dialog>
+</div>
+
+

@@ -1,0 +1,16 @@
+<div class="cascade">
+  <div class="input-wrapper" (click)="toggleHandler($event)">
+    <input class="cascade-input form-control" [value]="currentLabel" [placeholder]="placeholder" (input)="inputHandler($event.target.value)">
+    <b class="icon iconfont icon-sm-close" (click)="clearValue($event)" *ngIf="showClear"></b>
+    <i class="iconfont" [ngClass]="{'icon-caret': !menuVisible, 'icon-up': menuVisible}"></i>
+  </div>
+  <div class="cascade-menu-wrapper" *ngIf="menuVisible" (click)="clickMenuHandler($event)">
+    <ul class="cascade-menu" *ngFor="let menuItem of steps;let step = index">
+      <li class="cascade-menu-header" *ngIf="menuItem?.title">{{menuItem?.title}}</li>
+      <li class="cascade-list" *ngFor="let list of menuItem.model;let i = index" (click)="selectHandler(step, i)" [class.active]="list.active">
+        {{list.label}}
+        <i class="sysicon-angle-right" *ngIf="list.children"></i>
+      </li>
+    </ul>
+  </div>
+</div>

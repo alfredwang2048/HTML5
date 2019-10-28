@@ -1,0 +1,252 @@
+<div class="wrapper">
+  <app-cpe-city-list #cpeCityList></app-cpe-city-list>
+
+  <div class="box clearfix">
+    <div class="header">
+      <span class="sign"></span>
+      <span class="text">CPE</span>
+    </div>
+
+    <div class="item">
+      <p class="header">CPE总览</p>
+      <div class="chart-wrapper">
+        <div class="echart" echarts (chartClick)="pieChartClick($event)" [options]="pieChartOptions" [merge]="cpeOverviewOptions" [loading]="isLoading.cpeOverview"></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <p class="header">CPE状态</p>
+      <div class="chart-wrapper">
+        <div class="echart" echarts (chartClick)="pieChartClick($event)"
+             [options]="pieChartOptions"
+             [merge]="cpeStateOptions"
+             [loading]="isLoading.cpeState"></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <p class="header">
+        CPE在线
+        <span (click)="cpeCityList.open()" class="float-right blue" style="cursor: pointer">查看CPE分布情况</span>
+      </p>
+      <div class="chart-wrapper">
+        <div class="echart" echarts (chartClick)="pieChartClick($event)"
+             [options]="pieChartOptions"
+             [merge]="cpeOnlineStateOptions"
+             [loading]="isLoading.cpeOnlineState"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box clearfix">
+    <div class="header">
+      <span class="sign"></span>
+      <span class="text">告警</span>
+    </div>
+
+    <div class="item">
+      <p class="header">告警总数(最近24小时)</p>
+      <div class="chart-wrapper">
+        <div class="echart" echarts (chartClick)="pieChartClick($event)"
+             [options]="pieChartOptions"
+             [merge]="sdwanAlarmOptions"
+             [loading]="isLoading.sdwanAlarm"></div>
+      </div>
+    </div>
+
+    <div class="item table cpeAlarm">
+      <p class="header">
+        <span>最新告警</span>
+        <a href="/boss/alarm/#/alarm/history?productType=SDWAN">更多>></a>
+      </p>
+      <ul class="table-wrapper">
+        <li class="cell thead">
+          <span>序号</span>
+          <span>资源名称</span>
+          <span>告警内容</span>
+          <span>状态</span>
+        </li>
+        <li class="cell tbody" *ngFor="let item of baseData.cpeAlarmDatas; index as idx">
+          <span>{{idx + 1}}</span>
+          <span [appToolTip]="item.productName">{{item.productName}}</span>
+          <span [appToolTip]="item.alarmContent">{{item.alarmContent}}</span>
+          <span [appToolTip]="item.times">
+            <b class="label" [ngClass]="item.class">{{item.translateStatus}}</b>
+          </span>
+        </li>
+        <li class="no-data" *ngIf="noData.cpeAlarm">暂无数据</li>
+      </ul>
+    </div>
+
+    <div class="item table ceFault">
+      <p class="header">最近故障CPE</p>
+      <ul class="table-wrapper">
+        <li class="cell thead">
+          <span>序号</span>
+          <span>CPE名称</span>
+          <span>故障时间</span>
+        </li>
+        <li class="cell tbody" *ngFor="let item of baseData.ceFaultDatas; index as idx">
+          <span>{{idx + 1}}</span>
+          <span [appToolTip]="item.ceName">{{item.ceName}}</span>
+          <span [appToolTip]="item.heartBeat | date: 'yyyy-MM-dd HH:mm:ss'">{{item.heartBeat | date: 'yyyy-MM-dd HH:mm:ss'}}</span>
+        </li>
+        <li class="no-data" *ngIf="noData.ceFault">暂无数据</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box clearfix">
+
+    <div class="header">
+      <span class="sign"></span>
+      <span class="text">CPE带宽</span>
+    </div>
+
+    <div class="item">
+      <p class="header">CPE带宽</p>
+      <div class="chart-wrapper">
+        <div class="echart" echarts (chartClick)="pieChartClick($event)"
+             [options]="pieChartOptions" [merge]="ceBandwidthOptions" [loading]="isLoading.ceBandwidth"></div>
+      </div>
+    </div>
+
+    <div class="item table ceFault">
+      <p class="header">已用带宽TOP5</p>
+      <ul class="table-wrapper">
+        <li class="cell thead">
+          <span>序号</span>
+          <span>CPE名称</span>
+          <span>已用带宽</span>
+        </li>
+        <li class="cell tbody" *ngFor="let item of baseData.popInfoDatas; index as idx">
+          <span>{{idx + 1}}</span>
+          <span [appToolTip]="item.ceName">{{item.ceName}}</span>
+          <span [appToolTip]="item.bandwidth">{{item.bandwidth}}</span>
+        </li>
+        <li class="no-data" *ngIf="noData.popInfo">暂无数据</li>
+      </ul>
+    </div>
+
+    <div class="item table cpeAlarm">
+      <p class="header">带宽使用率TOP5</p>
+      <ul class="table-wrapper">
+        <li class="cell thead">
+          <span>序号</span>
+          <span>CPE名称</span>
+          <span>已用带宽</span>
+          <span>使用率</span>
+        </li>
+        <li class="cell tbody" *ngFor="let item of baseData.popInfoUsageDatas; index as idx">
+          <span>{{idx + 1}}</span>
+          <span [appToolTip]="item.ceName">{{item.ceName}}</span>
+          <span [appToolTip]="item.bandwidth">{{item.bandwidth}}</span>
+          <span [appToolTip]="item.bandwidthUsage + '%'">{{item.bandwidthUsage}}%</span>
+        </li>
+        <li class="no-data" *ngIf="noData.popInfoUsage">暂无数据</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="box clearfix">
+    <div class="header">
+      <span class="sign"></span>
+      <span class="text">VPE</span>
+    </div>
+
+    <div class="item">
+      <p class="header">VPE/IP状态</p>
+      <div class="chart-wrapper">
+        <div class="echart" echarts (chartClick)="pieChartClick($event)"
+             [options]="barChartOptions" [merge]="vpeStateOptions" [loading]="isLoading.vpeState"></div>
+      </div>
+    </div>
+
+    <div class="item">
+      <p class="header">VPE-PE链路</p>
+      <div class="chart-wrapper">
+        <div class="echart" echarts (chartClick)="pieChartClick($event)" [options]="pieChartOptions" [merge]="vpeLinkMonitorOptions" [loading]="isLoading.vpeLinkMonitor"></div>
+      </div>
+    </div>
+
+    <div class="item table publicNetworkAlarm">
+      <p class="header">
+        <span>最近故障公网IP</span>
+        <a href="/boss/alarm/#/alarm/history?productType=SDWANPUBLICNETWORK">更多>></a>
+      </p>
+      <ul class="table-wrapper">
+        <li class="cell thead">
+          <span>序号</span>
+          <span>公网IP</span>
+          <span>状态</span>
+        </li>
+        <li class="cell tbody" *ngFor="let item of baseData.publicNetworkAlarmDatas; index as idx">
+          <span>{{idx + 1}}</span>
+          <span [appToolTip]="item.publicIp">{{item.publicIp}}</span>
+          <span [appToolTip]="item.times">
+            <b class="label" [ngClass]="item.class">{{item.translateStatus}}</b>
+          </span>
+        </li>
+        <li class="no-data" *ngIf="noData.publicNetworkAlarm">暂无数据</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box clearfix">
+
+    <div class="header">
+      <span class="sign"></span>
+      <span class="text">公网线路</span>
+    </div>
+
+    <div class="item">
+      <p class="header">公网带宽</p>
+      <div class="chart-wrapper">
+        <div class="echart" echarts (chartClick)="pieChartClick($event)" [options]="pieChartOptions" [merge]="bandwidthStatisticsOptions" [loading]="isLoading.bandwidthStatistics"></div>
+      </div>
+    </div>
+
+    <div class="item table usedBandwidthTop5">
+      <p class="header">已用线路TOP5</p>
+      <ul class="table-wrapper">
+        <li class="cell thead">
+          <span>序号</span>
+          <span>VPE名称</span>
+          <span>已用带宽</span>
+          <span>公网IP</span>
+        </li>
+        <li class="cell tbody" *ngFor="let item of baseData.vpepopInfoDatas; index as idx">
+          <span>{{idx + 1}}</span>
+          <span [appToolTip]="item.vpeName">{{item.vpeName}}</span>
+          <span [appToolTip]="item.usedBandwidth">{{item.usedBandwidth}}</span>
+          <span [appToolTip]="item.publicIpTips">{{item.publicIp}}&nbsp;({{item.type|vpePublicNetworkType}})</span>
+        </li>
+        <li class="no-data" *ngIf="noData.vpepopInfo">暂无数据</li>
+      </ul>
+    </div>
+
+    <div class="item table cell-5">
+      <p class="header">线路使用率TOP5</p>
+      <ul class="table-wrapper">
+        <li class="cell thead">
+          <span>序号</span>
+          <span>VPE名称</span>
+          <span>已用带宽</span>
+          <span>使用率</span>
+          <span>公网IP</span>
+        </li>
+        <li class="cell tbody" *ngFor="let item of baseData.vpepopInfoUsageDatas; index as idx">
+          <span>{{idx + 1}}</span>
+          <span [appToolTip]="item.vpeName">{{item.vpeName}}</span>
+          <span [appToolTip]="item.usedBandwidth">{{item.usedBandwidth}}</span>
+          <span [appToolTip]="item.bandwidthUsage + '%'">{{item.bandwidthUsage}}%</span>
+          <span [appToolTip]="item.publicIpTips">{{item.publicIp}}&nbsp;({{item.type|vpePublicNetworkType}})</span>
+        </li>
+        <li class="no-data" *ngIf="noData.vpePopInfoUsage">暂无数据</li>
+      </ul>
+    </div>
+
+  </div>
+
+</div>

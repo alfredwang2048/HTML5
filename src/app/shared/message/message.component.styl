@@ -1,0 +1,54 @@
+/* message style */
+.message-container
+  position: fixed
+  top: 60px
+  right: 20px
+  z-index: 500
+  //visibility: hidden
+  transition: all .25s
+  .message
+    margin-bottom: 10px;
+    padding: 15px
+    min-width: 300px
+    border-width: 1px
+    border-style: solid
+    border-radius: 2px
+    font-size: 0
+    line-height: 16px
+    vertical-align: middle
+    width 400px
+    position relative
+    &.message-info
+      border-color: #e6ebf5
+      color: #878d99
+      background: #edf2fc
+    &.message-success
+      border-color: #e1f3d8
+      color: #67c23a
+      background: #f0f9eb
+    &.message-warn
+      border-color: #fbeccd
+      color: #eb9e05
+      background: #fdf5e6
+    &.message-error
+      border-color: #fedddd
+      color: #fa5555
+      background: #fee
+    p
+      display: inline-block
+      padding-left: 2px
+      height: 16px
+      font-size: 12px
+      line-height 20px
+    i
+      display: inline-block
+      height: 16px
+      font-size: 14px
+    .close
+      float: right
+      color: #333
+      font-size: 16px
+      cursor: pointer
+      position absolute
+      top 5px
+      right 5px

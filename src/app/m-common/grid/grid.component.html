@@ -1,0 +1,37 @@
+<div class="app-grid" [ngStyle]="{height: height}">
+  <div class="hidden-columns"><ng-content></ng-content></div>
+  <table [ngClass]="{'hasBorder': hasBorder}" class="app-grid-start" cellspacing="0" cellpadding="0">
+    <thead class="app-grid-header">
+      <tr>
+        <ng-container *ngFor="let col of columns">
+          <td class="app-grid-cell" [ngStyle]="{width: col.width, 'text-align': textCenter? 'center': 'left'}">
+            <ng-container *ngIf="col.header && !col.headerSlot">{{col.header}}</ng-container>
+            <ng-container *ngIf="col.headerSlot">
+              <ng-template [ngTemplateOutlet]="col.headerSlot"></ng-template>
+            </ng-container>
+          </td>
+        </ng-container>
+      </tr>
+    </thead>
+    <tbody class="app-grid-body">
+      <tr [ngClass]="{selected: selectIndex === k}" *ngFor="let tr of data;let k = index;" (click)="selectHandler($event,k)">
+        <ng-container *ngFor="let td of columns;">
+          <td class="app-grid-cell" #tdRef [ngStyle]="{width: td.width, 'text-align': textCenter ? 'center': 'left'}" (click)="cellClickHandler($event,k)">
+            <ng-container *ngIf="!isTemplateRef(td.slot) && !td._renderHTML">{{tr[td.field]}}</ng-container>
+            <div *ngIf="td._renderHTML" [innerHtml]="renderHtml(tr[td.field])"></div>
+            <ng-container *ngIf="isTemplateRef(td.slot)">
+              <ng-template [ngTemplateOutlet]="td.slot" [ngTemplateOutletContext]="{$implicit: tr, rowIndex: k}"></ng-template>
+            </ng-container>
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+  <div class="grid-empty-block" *ngIf="isEmpty && !loading">
+    <span class="empty-text">{{placeholder}}</span>
+  </div>
+  <div class="grid-loading" *ngIf="loading">
+    <span class="iconfont icon-loading"></span>
+    loading...
+  </div>
+</div>

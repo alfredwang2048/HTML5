@@ -1,0 +1,9 @@
+<app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width">
+
+  <div class="chart-wrapper">
+    <div class="echart" echarts [options]="pieChartOptions" [merge]="cpeCityListsOptions"
+         [loading]="isLoading.cpeCityLists"></div>
+  </div>
+
+</app-w-dialog>
+

@@ -1,0 +1,12 @@
+<table class="month-table">
+  <tbody>
+  <tr *ngFor="let row of monthRows; let i = index;">
+    <td class="available"
+        *ngFor="let item of row; let k = index;"
+        [class.current]="isCurrentMonth(i, k)"
+        (click)="clickHandle(i, k)">
+      <span class="cell">{{ item }}</span>
+    </td>
+  </tr>
+  </tbody>
+</table>

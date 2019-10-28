@@ -1,0 +1,28 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight" (visibleChange)="cancel();">
+    <form class="form-container" [formGroup]="updateCeForm">
+      <div class="form-group clearfix">
+        <div class="form-name">
+          <span class="form-label">丢包率阈值(%)<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <input class="form-control" type="number" formControlName="lossRate" placeholder="请输入阀值，区间2-50，推荐5">
+          <span class="form-label">%</span>
+        </div>
+        <div class="form-error" *ngIf="lossRate.invalid && (lossRate.dirty || lossRate.touched)">
+          <p class="error" *ngIf="lossRate.errors['required']">丢包率阈值必填</p>
+          <p class="error" *ngIf="lossRate.errors['pattern']">填入区间：2-50</p>
+          <p class="error" *ngIf="lossRate.errors['max']">填入区间：2-50</p>
+          <p class="error" *ngIf="lossRate.errors['min']">填入区间：2-50</p>
+        </div>
+        <app-bottom-comment [comment]="'注：启用后当丢包率大于阀值，启用丢包优化。会占用更多带宽。'"></app-bottom-comment>
+      </div>
+    </form>
+    <div class="btn-footer">
+          <button class="btn-default" (click)="cancel()">取消</button>
+          <button class="btn-primary" (click)="confirm()" [disabled]="updateCeForm.invalid">确定</button>
+        </div>
+  </app-w-dialog>
+</div>
+

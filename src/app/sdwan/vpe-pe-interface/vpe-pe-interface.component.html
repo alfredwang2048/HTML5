@@ -1,0 +1,41 @@
+<div class="height-0">
+  <app-vpe-pe-detail #detail [selectedItem]="selectedItem"></app-vpe-pe-detail>
+
+  <app-common-window #delete [width]="deleteCommonOption.width" [title]="deleteCommonOption.title"
+                     [message]="deleteCommonOption.message"
+                     (done)="deleteDone()"></app-common-window>
+  <app-loading-window #loading></app-loading-window>
+</div>
+<div class="title">VPE-PE接口管理</div>
+<div class="content-menu">
+  <app-vpe-pe-search (done)="searchDone($event)"></app-vpe-pe-search>
+</div>
+<div class="grid-wrapper">
+  <app-grid class="s-grid" [data]="vpePeInterfaceLists" [loading]="gridLoading" (selection-change)="showDetail($event)">
+    <app-grid-column field="uuid" header="UUID"></app-grid-column>
+    <app-grid-column field="vpeName" header="VPE名称"></app-grid-column>
+
+    <app-grid-column field="peIp" header="PE IP"></app-grid-column>
+    <app-grid-column field="sdwanNetworkName" header="所属网络"></app-grid-column>
+    <app-grid-column field="interfaceName" header="接口"></app-grid-column>
+    <app-grid-column field="vlan" header="vlan"></app-grid-column>
+    <app-grid-column field="vpnCount" header="vpn数量"></app-grid-column>
+
+    <app-grid-column field="createDate" header="创建时间">
+      <ng-template #slot let-dataItem>
+        {{dataItem.createDate | date: 'yyyy-MM-dd HH:mm:ss'}}
+      </ng-template>
+    </app-grid-column>
+
+    <app-grid-column header="操作" width="80px">
+      <ng-template #slot let-dataItem>
+        <span class="delete-btn" (click)="openDeleteWin($event, dataItem)">删除</span>
+      </ng-template>
+    </app-grid-column>
+
+  </app-grid>
+
+  <app-pagination *ngIf="pagination.show" [(pageSize)]="pagination.size" (pageSizeChange)="pageChange($event, true)"
+                  [dataTotal]="pagination.total" [(currentPage)]="pagination.current"
+                  (currentPageChange)="pageChange($event, false)" [layout]="pagination.layout"></app-pagination>
+</div>

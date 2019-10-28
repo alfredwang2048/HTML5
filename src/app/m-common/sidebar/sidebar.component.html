@@ -1,0 +1,11 @@
+<div class="w-sidebar" [ngStyle]="{width: width}">
+  <div class="toggle-bar" (click)="toggle()"><i class="iconfont" [ngClass]="{'icon-menu1': toggleType === 'mini', 'icon-menu2': toggleType === 'normal'}"></i></div>
+  <ul class="side-menu">
+    <li *ngFor="let item of model;let i = index">
+
+      <a [href]="item.href" [ngClass]="{active:i === selectedIndex}">
+        <i [ngClass]="[item.iconClass]"></i>{{item.text}}
+      </a>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,55 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight">
+    <form class="form-container" [formGroup]="updateCeBgpForm">
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">启用状况<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <app-el-switch [appToolTip]="bfdState ? '已启用' : '已禁用'" [model]="bfdState"
+                             (modelChange)="changeStateDone($event)" active-color="#13ce66"
+                             inactive-color="#d9534f"></app-el-switch>
+        </div>
+      </div>
+
+      <div *ngIf="bfdState">
+        <div class="form-group">
+          <div class="form-name">
+            <span class="form-label">接收间隔(ms)<span class="red">*</span>:</span>
+          </div>
+          <div class="form-model">
+            <input class="form-control" formControlName="recInterval" placeholder="范围100-1000(ms)">
+          </div>
+          <div class="form-error" *ngIf="recInterval.invalid && (recInterval.dirty || recInterval.touched)">
+            <p class="error" *ngIf="recInterval.errors['required']">请输入</p>
+            <p class="error" *ngIf="recInterval.errors['pattern']">格式错误</p>
+            <p class="error" *ngIf="recInterval.errors?.min">至少100ms</p>
+            <p class="error" *ngIf="recInterval.errors?.max">最多1000ms</p>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-name">
+            <span class="form-label">传输间隔(ms)<span class="red">*</span>:</span>
+          </div>
+          <div class="form-model">
+            <input class="form-control" formControlName="transInterval" placeholder="范围100-1000(ms)">
+          </div>
+          <div class="form-error" *ngIf="transInterval.invalid && (transInterval.dirty || transInterval.touched)">
+            <p class="error" *ngIf="transInterval.errors['required']">请输入</p>
+            <p class="error" *ngIf="transInterval.errors['pattern']">格式错误</p>
+            <p class="error" *ngIf="transInterval.errors?.min">至少100ms</p>
+            <p class="error" *ngIf="transInterval.errors?.max">最多1000ms</p>
+          </div>
+        </div>
+      </div>
+
+      <app-bottom-comment [comment]="'注:开启BFD能快速检测连通状况，改善主备链路切换收敛时间。'" ></app-bottom-comment>
+
+    </form>
+    <div class="btn-footer">
+      <button class="btn-default" (click)="cancel()">取消</button>
+      <button class="btn-primary" (click)="confirm()" [disabled]="updateCeBgpForm.invalid">确定</button>
+    </div>
+  </app-w-dialog>
+</div>

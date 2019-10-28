@@ -1,0 +1,3 @@
+<select class="page-size" (change)="changeHandler($event.target.value)">
+  <option *ngFor="let item of options" [value]="item.name" [selected]="item.name === currentSize">{{item.value}}</option>
+</select>

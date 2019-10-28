@@ -1,0 +1,16 @@
+<app-right-modal [title]="modelOption.title" [(toggle)]="modelOption.toggle" [width]="modelOption.width">
+  <ul class="right-detail">
+    <li *ngFor="let port of portModels">
+      <h3>{{port.text}}</h3>
+      <app-grid [data]="port.models" [loading]="gridLoading">
+        <app-grid-column field="name" header="name"></app-grid-column>
+        <app-grid-column field="model" header="型号"></app-grid-column>
+        <app-grid-column field="deviceId" header="设备ID"></app-grid-column>
+        <app-grid-column field="state" header="状态"></app-grid-column>
+        <app-grid-column field="type" header="类型"></app-grid-column>
+        <app-grid-column field="attribute" header="属性"></app-grid-column>
+        <app-grid-column field="protocol" header="协议"></app-grid-column>
+      </app-grid>
+    </li>
+  </ul>
+</app-right-modal>

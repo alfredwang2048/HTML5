@@ -1,0 +1,20 @@
+<div class="title">RYU监控</div>
+<div class="grid-wrapper">
+  <app-grid class="s-grid" [data]="ryus" [loading]="gridLoading">
+    <app-grid-column field="url" header="URL"></app-grid-column>
+    <app-grid-column field="status" header="status">
+      <ng-template #slot let-dataItem>
+        <span *ngIf="dataItem.status === 'Connected'" class="label label-success">Connected</span>
+        <span *ngIf="dataItem.status === 'Disconnected'" class="label label-danger">Disconnected</span>
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column field="heartDate" header="heartDate">
+      <ng-template #slot let-dataItem>
+        {{dataItem.heartDate | date: 'yyyy-MM-dd HH:mm:ss'}}
+      </ng-template>
+    </app-grid-column>
+  </app-grid>
+  <app-pagination *ngIf="pagination.show" [(pageSize)]="pagination.size" (pageSizeChange)="pageChange($event, true)"
+                  [dataTotal]="pagination.total" [(currentPage)]="pagination.current"
+                  (currentPageChange)="pageChange($event, false)" [layout]="pagination.layout"></app-pagination>
+</div>

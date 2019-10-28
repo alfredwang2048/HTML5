@@ -1,0 +1,309 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight" [height]="dialogOptions.height">
+    <form class="form-container" [formGroup]="updateCeTunnelForm">
+      <div *ngIf="isCanUpdate">
+        <div class="form-group">
+          <div class="form-name">
+            <span class="form-label">链路类型:</span>
+          </div>
+          <div class="form-model">
+            <span class="form-label">{{selectedPort?.lineType === 'TUNNEL'? '专线':'公网'}}</span>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="selectedPort?.lineType === 'TUNNEL'">
+          <div class="form-name">
+            <span class="form-label">专线类型:</span>
+          </div>
+          <div class="form-model">
+            <app-btn-group [models]="tunnelTypes" formControlName="tunnelType" (modelChange)="tunnelTypeDone($event)"></app-btn-group>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="selectedCe?.connectionType === 'TUNNEL' && tunnelType.value === 'SYSCLOUD'">
+          <div class="form-name">
+            <span class="form-label">专线<span class="red">*</span>:</span>
+          </div>
+          <div class="form-model">
+            <select class="form-control" formControlName="tunnel" (change)="changeTunnel($event)">
+              <option *ngFor="let item of tunnels" [value]="item.uuid">{{item.name}}</option>
+            </select>
+          </div>
+          <div class="form-error" *ngIf="tunnel.invalid && (tunnel.dirty || tunnel.touched)">
+            <p class="error" *ngIf="tunnel.errors['required']">专线必填</p>
+          </div>
+        </div>
+
+        <div *ngIf="tunnelType.value === 'SYSCLOUD'">
+          <div class="form-group">
+            <div class="form-name">
+              <span class="form-label">连接点<span class="red">*</span>:</span>
+            </div>
+            <div class="form-model">
+              <select class="form-control" formControlName="endpoint" (change)="changeEndpoint($event)">
+                <option *ngFor="let item of endpoints" [value]="item.uuid">{{item.name}}</option>
+              </select>
+            </div>
+            <div class="form-error" *ngIf="endpoint.invalid && (endpoint.dirty || endpoint.touched)">
+              <p class="error" *ngIf="endpoint.errors['required']">专线连接点必填</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-name">
+              <span class="form-label">vlan:</span>
+            </div>
+            <div class="form-model">
+              <input class="form-control" formControlName="sysVlan" placeholder="请输入vlan">
+            </div>
+            <div class="form-error" *ngIf="sysVlan.invalid && (sysVlan.dirty || sysVlan.touched)">
+              <p class="error" *ngIf="sysVlan.errors['pattern']">vlan格式错误</p>
+            </div>
+          </div>
+
+          <div class="form-group multi-input" formGroupName="sysLocalIp">
+            <div class="form-name">
+            <span class="form-label">
+              Local IP
+              <span class="red">*</span>:
+            </span>
+            </div>
+            <div class="form-model">
+              <input type="text" class="form-control" formControlName="number1"/>
+              <input type="text" class="form-control" formControlName="number2"/>
+              <input type="text" class="form-control" formControlName="number3"/>
+              <input type="text" class="form-control" formControlName="number4"/>
+            </div>
+            <div class="form-error" *ngIf="
+              (sysLocalIp.get('number1').invalid && (sysLocalIp.get('number1').dirty || sysLocalIp.get('number1').touched)) ||
+              (sysLocalIp.get('number2').invalid && (sysLocalIp.get('number2').dirty || sysLocalIp.get('number2').touched)) ||
+              (sysLocalIp.get('number3').invalid && (sysLocalIp.get('number3').dirty || sysLocalIp.get('number3').touched)) ||
+              (sysLocalIp.get('number4').invalid && (sysLocalIp.get('number4').dirty || sysLocalIp.get('number4').touched))
+              ">
+                  <p class="error" *ngIf="
+                (sysLocalIp.get('number1').errors && sysLocalIp.get('number1').errors['required']) ||
+                (sysLocalIp.get('number2').errors && sysLocalIp.get('number2').errors['required']) ||
+                (sysLocalIp.get('number3').errors && sysLocalIp.get('number3').errors['required']) ||
+                (sysLocalIp.get('number4').errors && sysLocalIp.get('number4').errors['required'])
+              ">Local IP 必填</p>
+                  <p class="error" *ngIf="
+                (sysLocalIp.get('number1').errors && sysLocalIp.get('number1').errors['pattern']) ||
+                (sysLocalIp.get('number2').errors && sysLocalIp.get('number2').errors['pattern']) ||
+                (sysLocalIp.get('number3').errors && sysLocalIp.get('number3').errors['pattern']) ||
+                (sysLocalIp.get('number4').errors && sysLocalIp.get('number4').errors['pattern'])
+              ">格式错误</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-name">
+              <span class="form-label">掩码<span class="red">*</span>:</span>
+            </div>
+            <div class="form-model">
+              <span class="form-label">
+                {{vlanInfos?.netmask}}
+                <span *ngIf="!isQueryVlanInfo" class="iconfont icon-loading"></span>
+                <span *ngIf="!vlanInfos?.netmask && isQueryVlanInfo" class="error">未获取到掩码，请前往专线配置</span>
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-name">
+              <span class="form-label">监控IP<span class="red">*</span>:</span>
+            </div>
+            <div class="form-model">
+              <span class="form-label">
+                {{vlanInfos?.remoteIp}}
+                <span *ngIf="!isQueryVlanInfo" class="iconfont icon-loading"></span>
+                <span *ngIf="!vlanInfos?.remoteIp && isQueryVlanInfo" class="error">未获取到监控IP，请前往专线配置</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="tunnelType.value === 'THIRDPARTY'">
+          <div class="form-group">
+            <div class="form-name">
+              <span class="form-label">VLAN:</span>
+            </div>
+            <div class="form-model">
+              <input class="form-control" formControlName="vlan" placeholder="请输入vlan">
+            </div>
+            <div class="form-error" *ngIf="vlan.invalid && (vlan.dirty || vlan.touched)">
+              <p class="error" *ngIf="vlan.errors['pattern']">vlan格式错误</p>
+            </div>
+          </div>
+          <div class="form-group multi-input" formGroupName="localIp">
+            <div class="form-name">
+            <span class="form-label">
+              Local IP
+              <span class="red">*</span>:
+            </span>
+            </div>
+            <div class="form-model">
+              <input type="text" class="form-control" formControlName="number1"/>
+              <input type="text" class="form-control" formControlName="number2"/>
+              <input type="text" class="form-control" formControlName="number3"/>
+              <input type="text" class="form-control" formControlName="number4"/>
+            </div>
+            <div class="form-error" *ngIf="
+              (localIp.get('number1').invalid && (localIp.get('number1').dirty || localIp.get('number1').touched)) ||
+              (localIp.get('number2').invalid && (localIp.get('number2').dirty || localIp.get('number2').touched)) ||
+              (localIp.get('number3').invalid && (localIp.get('number3').dirty || localIp.get('number3').touched)) ||
+              (localIp.get('number4').invalid && (localIp.get('number4').dirty || localIp.get('number4').touched))
+              ">
+                  <p class="error" *ngIf="
+                (localIp.get('number1').errors && localIp.get('number1').errors['required']) ||
+                (localIp.get('number2').errors && localIp.get('number2').errors['required']) ||
+                (localIp.get('number3').errors && localIp.get('number3').errors['required']) ||
+                (localIp.get('number4').errors && localIp.get('number4').errors['required'])
+              ">Local IP 必填</p>
+                  <p class="error" *ngIf="
+                (localIp.get('number1').errors && localIp.get('number1').errors['pattern']) ||
+                (localIp.get('number2').errors && localIp.get('number2').errors['pattern']) ||
+                (localIp.get('number3').errors && localIp.get('number3').errors['pattern']) ||
+                (localIp.get('number4').errors && localIp.get('number4').errors['pattern'])
+              ">格式错误</p>
+            </div>
+          </div>
+          <div class="form-group multi-input" formGroupName="peerIp">
+            <div class="form-name">
+            <span class="form-label">
+              Peer IP
+              <span class="red">*</span>:
+            </span>
+            </div>
+            <div class="form-model">
+              <input type="text" class="form-control" formControlName="number1"/>
+              <input type="text" class="form-control" formControlName="number2"/>
+              <input type="text" class="form-control" formControlName="number3"/>
+              <input type="text" class="form-control" formControlName="number4"/>
+            </div>
+            <div class="form-error" *ngIf="
+              (peerIp.get('number1').invalid && (peerIp.get('number1').dirty || peerIp.get('number1').touched)) ||
+              (peerIp.get('number2').invalid && (peerIp.get('number2').dirty || peerIp.get('number2').touched)) ||
+              (peerIp.get('number3').invalid && (peerIp.get('number3').dirty || peerIp.get('number3').touched)) ||
+              (peerIp.get('number4').invalid && (peerIp.get('number4').dirty || peerIp.get('number4').touched))
+              ">
+                  <p class="error" *ngIf="
+                (peerIp.get('number1').errors && peerIp.get('number1').errors['required']) ||
+                (peerIp.get('number2').errors && peerIp.get('number2').errors['required']) ||
+                (peerIp.get('number3').errors && peerIp.get('number3').errors['required']) ||
+                (peerIp.get('number4').errors && peerIp.get('number4').errors['required'])
+              ">Peer IP 必填</p>
+                  <p class="error" *ngIf="
+                (peerIp.get('number1').errors && peerIp.get('number1').errors['pattern']) ||
+                (peerIp.get('number2').errors && peerIp.get('number2').errors['pattern']) ||
+                (peerIp.get('number3').errors && peerIp.get('number3').errors['pattern']) ||
+                (peerIp.get('number4').errors && peerIp.get('number4').errors['pattern'])
+              ">格式错误</p>
+            </div>
+          </div>
+          <div class="form-group multi-input" formGroupName="netmask">
+            <div class="form-name">
+            <span class="form-label">
+              掩码<span class="red">*</span>:
+            </span>
+            </div>
+            <div class="form-model">
+              <input type="text" class="form-control" formControlName="number1"/>
+              <input type="text" class="form-control" formControlName="number2"/>
+              <input type="text" class="form-control" formControlName="number3"/>
+              <input type="text" class="form-control" formControlName="number4"/>
+            </div>
+            <div class="form-error" *ngIf="
+              (netmask.get('number1').invalid && (netmask.get('number1').dirty || netmask.get('number1').touched)) ||
+              (netmask.get('number2').invalid && (netmask.get('number2').dirty || netmask.get('number2').touched)) ||
+              (netmask.get('number3').invalid && (netmask.get('number3').dirty || netmask.get('number3').touched)) ||
+              (netmask.get('number4').invalid && (netmask.get('number4').dirty || netmask.get('number4').touched))
+              ">
+                  <p class="error" *ngIf="
+                (netmask.get('number1').errors && netmask.get('number1').errors['required']) ||
+                (netmask.get('number2').errors && netmask.get('number2').errors['required']) ||
+                (netmask.get('number3').errors && netmask.get('number3').errors['required']) ||
+                (netmask.get('number4').errors && netmask.get('number4').errors['required'])
+              ">掩码 必填</p>
+                  <p class="error" *ngIf="
+                (netmask.get('number1').errors && netmask.get('number1').errors['pattern']) ||
+                (netmask.get('number2').errors && netmask.get('number2').errors['pattern']) ||
+                (netmask.get('number3').errors && netmask.get('number3').errors['pattern']) ||
+                (netmask.get('number4').errors && netmask.get('number4').errors['pattern'])
+              ">格式错误</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-name">
+              <span class="form-label">BPG Remote AS:</span>
+            </div>
+            <div class="form-model">
+              <input class="form-control" formControlName="asn" placeholder="请输入remote as number">
+            </div>
+            <div class="form-error" *ngIf="asn.invalid && (asn.dirty || asn.touched)">
+              <p class="error" *ngIf="asn.errors['pattern']">格式不正确</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-name">
+              <span class="form-label">BPG Password:</span>
+            </div>
+            <div class="form-model">
+              <input class="form-control" formControlName="password" placeholder="请输入remote as assword">
+            </div>
+          </div>
+          <div class="form-group multi-input" formGroupName="remoteIp">
+            <div class="form-name">
+            <span class="form-label">
+              监控IP:
+            </span>
+            </div>
+            <div class="form-model">
+              <input type="text" class="form-control" formControlName="number1"/>
+              <input type="text" class="form-control" formControlName="number2"/>
+              <input type="text" class="form-control" formControlName="number3"/>
+              <input type="text" class="form-control" formControlName="number4"/>
+            </div>
+            <div class="form-error" *ngIf="
+              (remoteIp.get('number1').invalid && (remoteIp.get('number1').dirty || remoteIp.get('number1').touched)) ||
+              (remoteIp.get('number2').invalid && (remoteIp.get('number2').dirty || remoteIp.get('number2').touched)) ||
+              (remoteIp.get('number3').invalid && (remoteIp.get('number3').dirty || remoteIp.get('number3').touched)) ||
+              (remoteIp.get('number4').invalid && (remoteIp.get('number4').dirty || remoteIp.get('number4').touched))
+              ">
+                  <p class="error" *ngIf="
+                (remoteIp.get('number1').errors && remoteIp.get('number1').errors['required']) ||
+                (remoteIp.get('number2').errors && remoteIp.get('number2').errors['required']) ||
+                (remoteIp.get('number3').errors && remoteIp.get('number3').errors['required']) ||
+                (remoteIp.get('number4').errors && remoteIp.get('number4').errors['required'])
+              ">Peer IP 必填</p>
+                  <p class="error" *ngIf="
+                (remoteIp.get('number1').errors && remoteIp.get('number1').errors['pattern']) ||
+                (remoteIp.get('number2').errors && remoteIp.get('number2').errors['pattern']) ||
+                (remoteIp.get('number3').errors && remoteIp.get('number3').errors['pattern']) ||
+                (remoteIp.get('number4').errors && remoteIp.get('number4').errors['pattern'])
+              ">格式错误</p>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" *ngIf="selectedPort?.lineType === 'TUNNEL'">
+          <div class="form-name">
+            <span class="form-label">设备端口<span class="red">*</span>:</span>
+          </div>
+          <div class="form-model">
+            <select class="form-control" formControlName="port">
+              <option *ngFor="let item of ports" [value]="item.uuid">{{item.name}}</option>
+            </select>
+          </div>
+        </div>
+        <p *ngIf="tunnelType.value === 'THIRDPARTY'" class="attention"><span class="iconfont icon-jinggao-"></span>注：Local IP、Peer IP、监控IP 必须同网段。</p>
+      </div>
+      <div *ngIf="!isCanUpdate">
+        <div class="tips">
+          <span class="iconfont icon-jinggao-"></span>仅在禁用的状态下才能变更链路配置。
+        </div>
+      </div>
+    </form>
+    <div class="btn-footer">
+      <button class="btn-default" (click)="cancel()">取消</button>
+      <button class="btn-primary" (click)="confirm()" [disabled]="!isCanUpdate || updateCeTunnelForm.invalid || isInvalidVlanInfo">确定</button>
+    </div>
+  </app-w-dialog>
+</div>

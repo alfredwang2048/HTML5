@@ -1,0 +1,39 @@
+<app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width">
+    <div class="form-container">
+
+        <div class="form-group">
+            <div class="form-name">
+                <span class="form-label">VPE类型<span class="red">*</span>:</span>
+            </div>
+            <div class="form-model">
+                <button type="button" class="button" [ngClass]="{'active':distribution == 'AUTO'}" (click)="onClickBtn('AUTO')">全部VPE</button>
+                <button type="button" class="button" [ngClass]="{'active':distribution == 'ASSIGN'}" (click)="onClickBtn('APPOINT')">指定VPE</button>
+            </div>
+        </div>
+
+        <div class="form-group vpeList" *ngIf="distribution == 'ASSIGN'">
+            <div class="form-model vpe-list">
+              <ul>
+                <li *ngFor="let vpes of vpeList">
+                  <div *ngFor="let vpe of vpes" [ngClass]="{'lable-disabled':vpe.state === 'Disabled'}">
+                    <input type="checkbox" (change)="changeBox($event,vpe)" [(ngModel)]="selectVpeUuid[vpe.uuid]" [disabled]="vpe.state === 'Disabled'">
+                    <span>{{vpe.name}}</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+        </div>
+        <div class="tips" ng-show="tips">
+            <span class="red">{{tips}}</span>
+        </div>
+
+        <div class="btn-container" style="margin-top: 25px;">
+            <button type="button" class="btn-default" (click)="cancel()">取消</button>
+            <button type="button" class="btn-primary" (click)="confirm()">确定</button>
+        </div>
+    </div>
+</app-w-dialog>
+
+<div class="height-0">
+  <app-appoint-vpe #appointVpe [assignType]="assignType" [selectVpe]="selectVpe" [selectedItem]="selectedItem" (done)="selectDone($event)"></app-appoint-vpe>
+</div>

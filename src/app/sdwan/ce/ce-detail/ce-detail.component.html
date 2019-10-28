@@ -1,0 +1,934 @@
+<app-right-modal [titleIcon]="modelOption.titleIcon" [title]="modelOption.title" [(toggle)]="modelOption.toggle" [width]="width">
+  <div class="tab">
+    <app-nav-tabs [width]="'100px'" [lists]="navTabLists" [(ngModel)]="currentTab" (modelChange)="navTabsDone($event)"></app-nav-tabs>
+  </div>
+  <ul class="list right-detail" *ngIf="ceInfos">
+
+    <li *ngIf="currentTab.value === 'deviceInfo'" class="item">
+      <h3>基本信息</h3>
+      <div class="col-md-6">
+        <ul>
+          <li>
+            <span class="name">名称:</span>
+            <span class="model">
+              {{ceInfos.ceInventory?.name}}
+              <i class="iconfont icon-edit" (click)="updateEleRf.openDialog()" [appToolTip]="'修改名称'"></i>
+            </span>
+          </li>
+          <li><span class="name">ESN号:</span><span class="model">{{ceInfos.ceInventory?.esn}}</span></li>
+          <li>
+            <span class="name">状态:</span>
+            <span class="model">
+              <span *ngIf="ceInfos.ceInventory?.status=='online'" class="btn-sm btn-success">已连接</span>
+               <span *ngIf="ceInfos.ceInventory?.status=='offline'" class="btn-sm btn-error">未连接</span>
+               (frp端口: {{ceInfos.ceInventory?.frpServerPort}},web端口：{{ceInfos.ceInventory?.frpWebPort}})
+            </span>
+          </li>
+          <li>
+            <span class="name">启用状况:</span>
+            <span class="model">
+              <app-el-switch [elDisabled]="ceInfos.ceInventory.configStatus === 'Deploying'"
+                             [appToolTip]="ceInfos.ceInventory.state === 'Enabled' ? '已启用' : '已禁用'" [model]="ceState"
+                             (modelChange)="changeStateDone($event)" active-color="#13ce66"
+                             inactive-color="#d9534f"></app-el-switch>
+            </span>
+          </li>
+          <li *ngIf="ceInfos.ceInventory.bandwidthOfferingUuid && ceInfos.ceInventory.bandwidthOfferingUuid !=='0'">
+            <span class="name">峰值带宽:</span>
+            <span class="model">
+              {{ceInfos.ceInventory?.bandwidthOfferingUuid}}
+              <i *ngIf="isShowUpdateBDI" class="iconfont icon-cog" (click)="updateCeBandwidthRef.openDialog()"
+                 [appToolTip]="'变更带宽峰值'"></i>
+            </span>
+          </li>
+          <li>
+            <span class="name">互通模式:</span>
+            <span class="model">
+              {{ceInfos.ceInventory?.l3Protocol}}
+              <a *ngIf="ceInfos.ceInventory.l3Protocol === 'BGP'" (click)="updateBfdEleRf.openDialog()" class="btn-sm btn-sys btn-link">BFD设置</a>
+            </span>
+          </li>
+          <!--<li *ngIf="ceInfos.ceInventory?.vpnType && ceInfos.ceInventory?.model !== 'mCPE'">
+            <span class="name">VPN模式:</span>
+            <span class="model">
+              {{ceInfos.ceInventory?.vpnType}}
+              <i class="iconfont icon-cog" (click)="updateCeVpnTypeRef.openDialog()" [appToolTip]="'更改VPN模式'"></i>
+            </span>
+          </li>-->
+          <li *ngIf="ceInfos.ceInventory?.model !== 'mCPE'">
+            <span class="name">链路模式:</span>
+            <span class="model">
+              {{ceInfos.ceInventory?.connectionType}}({{UtilsconnectionMode[ceInfos.ceInventory.connectionMode]}}, 主备切换: {{ceInfos.ceInventory?.masterSlaveSwitch}})
+              <i [appToolTip]="'设置链路模式'" class="iconfont icon-cog" (click)="updateCeConnectionModeRef.openDialog()"></i>
+            </span>
+          </li>
+          <li>
+            <span class="name">配置状态:</span>
+            <span class="model">
+              <span class="btn-sm btn-warning" *ngIf="ceInfos.ceInventory.configStatus === 'Initial'">未配置</span>
+              <span class="btn-sm btn-sys" *ngIf="ceInfos.ceInventory.configStatus === 'Config'">已配置</span>
+              <span class="btn-sm btn-sys" *ngIf="ceInfos.ceInventory.configStatus === 'Deploying'">下发中</span>
+            </span>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <ul>
+          <li><span class="name">UUID:</span><span class="model">{{ceInfos.ceInventory?.uuid}}</span></li>
+          <li><span class="name">CPE型号:</span><span class="model">{{ceInfos.ceInventory?.model}}</span></li>
+          <li>
+            <span class="name">心跳时间:</span>
+            <span class="model">
+              {{lasterTime}}
+              ({{ceInfos.ceInventory?.heartBeat | date: 'yyyy-MM-dd HH:mm:ss'}})
+            </span>
+          </li>
+          <li>
+            <span class="name">安装地址:</span>
+            <span class="model">
+              {{ceInfos.ceInventory?.address}}/{{ceInfos.ceInventory?.city}}
+              <i class="iconfont icon-edit" (click)="updateEleRf.openDialog()" [appToolTip]="'修改安装地址'"></i>
+            </span>
+          </li>
+          <li>
+            <span class="name">软件版本:</span>
+            <span class="model">
+              {{ceInfos.ceInventory?.agentVersion}}
+              <i *ngIf="ceInfos.ceInventory.status=='online'" class="iconfont icon-cog"
+                 (click)="updateCeAgentVersionEleRef.openDialog()"
+                 [appToolTip]="'升级软件版本'"></i>
+            </span>
+          </li>
+          <li>
+            <span class="name">CPU内存使用:</span>
+            <span class="model">
+              <i (click)="openSysMonitor()" class="iconfont icon-chart cursor-pointer color-sys" [appToolTip]="'查看CPU/内存使用监控'"></i>
+            </span>
+          </li>
+          <li>
+            <span class="name">描述:</span>
+            <span class="model">
+              {{ceInfos.ceInventory?.description}}
+              <i class="iconfont icon-edit" (click)="updateEleRf.openDialog()" [appToolTip]="'修改描述'"></i>
+            </span>
+          </li>
+          <li>
+            <span class="name">ipRegion:</span>
+            <span class="model">
+              {{ceInfos.ceInventory?.ipRegion}}
+            </span>
+          </li>
+
+        </ul>
+      </div>
+    </li>
+
+    <li *ngIf="currentTab.value === 'deviceInfo'" class="item">
+      <h3>连接链路</h3>
+      <div *ngIf="ceInfos.ceInventory.connectionType == 'TUNNEL'">
+        <div class="col-md-6">
+          <ul>
+            <li>
+              <span class="name">主链路:</span>
+              <span class="model">
+                {{tunnelInfos?.master?.lineName}}
+                {{tunnelInfos?.master?.tunnelType ? '(' + TunnelType[tunnelInfos.master.tunnelType] +')' : ''}}
+                <i class="iconfont icon-cog" (click)="updateLineRef.openDialog(tunnelInfos.master)"
+                   [appToolTip]="'链路配置'"></i>
+              </span>
+            </li>
+            <li><span class="name">云专线:</span><span class="model">{{tunnelInfos?.master?.tunnelName}}</span></li>
+            <li><span class="name">连接点:</span><span class="model">{{tunnelInfos?.master?.endpointName}}</span></li>
+            <li>
+              <span class="name">状态:</span>
+              <span class="model">
+                <span *ngIf="tunnelInfos?.master?.state=='Connected'" class="btn-sm btn-success">正常</span>
+
+                <span *ngIf="tunnelInfos?.master?.state=='Disconnected'">
+                  <span *ngIf="selectedCe.os === 'vyos' || tunnelInfos?.slave?.state==='Disconnected'">
+                    <span class="btn-sm btn-error">异常</span>
+                  </span>
+                  <span *ngIf="selectedCe.os !== 'vyos' && tunnelInfos?.slave?.state==='Connected'">
+                    <span class="btn-sm btn-gray">备线</span>
+                  </span>
+                </span>
+
+              </span>
+            </li>
+            <li *ngIf="tunnelInfos?.master?.heartBeat">
+              <span class="name">心跳时间:</span>
+              <span class="model">
+                <span [ngStyle]="{'margin-right': '5px'}">{{tunnelInfos?.master?.heartBeat2}}</span>
+                ({{tunnelInfos?.master?.heartBeat | date: 'yyyy-MM-dd HH:mm:ss'}})
+              </span>
+            </li>
+            <li>
+              <span class="name">CPE IP:</span>
+              <span class="model">
+                {{tunnelInfos?.master?.localIp}}
+                <span *ngIf="tunnelInfos?.master?.nicName">
+                  ({{tunnelInfos?.master?.nicName}})
+                </span>
+              </span>
+            </li>
+            <li *ngIf="tunnelInfos?.master?.lineName === '专线'">
+              <span class="name">端口</span>
+              <span class="model">{{tunnelInfos?.master?.nicName}}</span>
+            </li>
+            <li *ngIf="tunnelInfos?.master?.monitorIp"><span class="name">Monitor IP:</span><span class="model">{{tunnelInfos?.master?.monitorIp}}</span></li>
+            <li><span class="name">VLAN:</span><span class="model">{{tunnelInfos?.master?.vlan}}</span></li>
+            <li *ngIf="tunnelInfos?.master?.lineName === '公网'">
+              <span class="name">VPE:</span>
+              <span class="model">{{tunnelInfos?.master?.vpeName}}
+                <span *ngIf="tunnelInfos?.master?.manageIp">({{tunnelInfos?.master?.manageIp}})</span>
+              </span>
+            </li>
+            <li *ngIf="tunnelInfos?.master?.vpeIp">
+              <span class="name">VPE IP(公网):</span>
+              <span class="model">
+                {{tunnelInfos?.master?.vpeIp}}
+                <span>:</span>
+                {{tunnelInfos?.master?.vpnPort}}
+              </span>
+            </li>
+            <li><span class="name">优先级:</span><span class="model">{{tunnelInfos?.master?.popPriority}}</span></li>
+            <li><span class="name">切换时间:</span><span class="model">{{tunnelInfos?.master?.haSwitchTime | date: 'yyyy-MM-dd HH:mm:ss'}}</span></li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <ul>
+            <li>
+              <span class="name">备链路:</span>
+              <span class="model">
+                {{tunnelInfos?.slave?.lineName}}
+                {{tunnelInfos?.slave?.tunnelType ? '(' + TunnelType[tunnelInfos.slave.tunnelType] +')' : ''}}
+                <i class="iconfont icon-cog" (click)="updateLineRef.openDialog(tunnelInfos.slave)"
+                   [appToolTip]="'链路配置'"></i>
+              </span>
+            </li>
+            <li><span class="name">云专线:</span><span class="model">{{tunnelInfos?.slave?.tunnelName}}</span></li>
+            <li><span class="name">连接点:</span><span class="model">{{tunnelInfos?.slave?.endpointName}}</span></li>
+            <li>
+              <span class="name">状态:</span>
+              <span class="model">
+                <span *ngIf="tunnelInfos?.slave?.state=='Connected'" class="btn-sm btn-success">正常</span>
+
+                <span *ngIf="tunnelInfos?.slave?.state=='Disconnected'">
+                  <span *ngIf="selectedCe.os === 'vyos' || tunnelInfos?.master?.state==='Disconnected'">
+                    <span class="btn-sm btn-error">异常</span>
+                  </span>
+                  <span *ngIf="selectedCe.os !== 'vyos' && tunnelInfos?.master?.state==='Connected'">
+                    <span class="btn-sm btn-gray">备线</span>
+                  </span>
+                </span>
+
+              </span>
+            </li>
+            <li *ngIf="tunnelInfos?.slave?.heartBeat">
+              <span class="name">心跳时间:</span>
+              <span class="model">
+                <span [ngStyle]="{'margin-right': '5px'}">{{tunnelInfos?.slave?.heartBeat2}}</span>
+                ({{tunnelInfos?.slave?.heartBeat | date: 'yyyy-MM-dd HH:mm:ss'}})
+              </span>
+            </li>
+            <li>
+              <span class="name">CPE IP:</span>
+              <span class="model">
+                {{tunnelInfos?.slave?.localIp}}
+                <span *ngIf="tunnelInfos?.slave?.nicName">
+                  ({{tunnelInfos?.slave?.nicName}})
+                </span>
+              </span>
+            </li>
+            <li *ngIf="tunnelInfos?.slave?.lineName === '专线'">
+              <span class="name">端口</span>
+              <span class="model">{{tunnelInfos?.slave?.nicName}}</span>
+            </li>
+            <li *ngIf="tunnelInfos?.slave?.monitorIp"><span class="name">Monitor IP:</span><span class="model">{{tunnelInfos?.slave?.monitorIp}}</span></li>
+            <li><span class="name">VLAN:</span><span class="model">{{tunnelInfos?.slave?.vlan}}</span></li>
+            <li *ngIf="tunnelInfos?.slave?.lineName === '公网'">
+              <span class="name">VPE:</span>
+              <span class="model">
+                {{tunnelInfos?.slave?.vpeName}}
+                <span *ngIf="tunnelInfos?.slave?.manageIp">({{tunnelInfos?.slave?.manageIp}})</span>
+              </span>
+            </li>
+            <li *ngIf="tunnelInfos?.slave?.vpeIp">
+              <span class="name">VPE IP(公网):</span>
+              <span class="model">
+                {{tunnelInfos?.slave?.vpeIp}}
+                <span>:</span>
+                {{tunnelInfos?.slave?.vpnPort}}
+              </span>
+            </li>
+            <li><span class="name">优先级:</span><span class="model">{{tunnelInfos?.slave?.popPriority}}</span></li>
+            <li><span class="name">切换时间:</span><span class="model">{{tunnelInfos?.slave?.haSwitchTime | date: 'yyyy-MM-dd HH:mm:ss'}}</span></li>
+          </ul>
+        </div>
+      </div>
+      <div *ngIf="ceInfos.ceInventory.connectionType == 'SDWAN'">
+        <div class="clearfix">
+          <div class="col-md-6">
+            <ul>
+              <li>
+                <span class="name">主链路:</span>
+                <span class="model">
+                  {{sdwanInfos?.master?.lineName}}
+                  {{sdwanInfos?.master?.tunnelType ? '(' + TunnelType[sdwanInfos.master.tunnelType] +')' : ''}}
+                  <i *ngIf="sdwanInfos?.master?.lineType === 'TUNNEL'" class="iconfont icon-cog"
+                     (click)="updateLineRef.openDialog(sdwanInfos.master)" [appToolTip]="'链路配置'"></i>
+                </span>
+              </li>
+              <li *ngIf="sdwanInfos?.master?.endpointName">
+                <span class="name">连接点:</span>
+                <span class="model">
+                  {{sdwanInfos?.master?.endpointName}}
+                  <span *ngIf="sdwanInfos?.master?.interfaceName">({{sdwanInfos?.master?.interfaceName}})</span>
+                </span>
+              </li>
+              <li>
+                <span class="name">状态:</span>
+                <span class="model">
+                  <span [appToolTip]="sdwanInfos?.master.rttText" *ngIf="sdwanInfos?.master?.state=='Connected'" class="btn-sm btn-success">
+                    <span>{{sdwanInfos?.master?.rtt}}</span>
+                  </span>
+                  <span [appToolTip]="sdwanInfos?.master.rttText" *ngIf="sdwanInfos?.master?.state=='Connecting'" class="btn-sm btn-warning">连接中</span>
+
+                  <span *ngIf="sdwanInfos?.master?.state=='Disconnected'">
+                    <span *ngIf="selectedCe.os === 'vyos' || sdwanInfos?.slave?.state==='Disconnected'">
+                      <span [appToolTip]="sdwanInfos?.master.rttText" class="btn-sm btn-error">异常</span>
+                    </span>
+                    <span *ngIf="selectedCe.os !== 'vyos' && sdwanInfos?.slave?.state==='Connected'">
+                      <span class="btn-sm btn-gray">备线</span>
+                    </span>
+                  </span>
+
+                  <span [style.marginLeft]="'5px'" class="color-sys" (click)="openMonitor(sdwanInfos?.master)"><i class="iconfont icon-chart cursor-pointer" [appToolTip]="'查看监控'"></i></span>
+                </span>
+              </li>
+              <li *ngIf="sdwanInfos?.master?.heartBeat">
+                <span class="name">心跳时间:</span>
+                <span class="model">
+                  <span [ngStyle]="{'margin-right': '5px'}">{{sdwanInfos?.master?.heartBeat2}}</span>
+                  ({{sdwanInfos?.master?.heartBeat | date: 'yyyy-MM-dd HH:mm:ss'}})
+                </span>
+              </li>
+              <li>
+                <span class="name">CPE IP:</span>
+                <span class="model">
+                  {{sdwanInfos?.master?.localIp}}
+                  <span *ngIf="sdwanInfos?.master?.nicName">({{sdwanInfos?.master?.nicName}})</span>
+                </span>
+              </li>
+              <li *ngIf="sdwanInfos?.master?.lineName === '专线'">
+                <span class="name">端口:</span>
+                <span class="model">{{sdwanInfos?.master?.nicName}}</span>
+              </li>
+              <li *ngIf="sdwanInfos?.master?.lineName === '专线'">
+                <span class="name">BGP ASN:</span>
+                <span class="model">remote as:{{sdwanInfos?.master?.asn}}, local as:65535</span>
+              </li>
+              <li *ngIf="sdwanInfos?.master?.monitorIp"><span class="name">Monitor IP:</span><span class="model">{{sdwanInfos?.master?.monitorIp}}</span>
+              </li>
+              <li><span class="name">PE IP:</span><span class="model">{{sdwanInfos?.master?.peIp}}</span></li>
+              <li *ngIf="sdwanInfos?.master?.vlan"><span class="name">VLAN:</span><span class="model">{{sdwanInfos?.master?.vlan}}</span></li>
+              <li *ngIf="sdwanInfos?.master?.lineName === '公网'">
+                <span class="name">VPE:</span>
+                <span class="model">
+                  {{sdwanInfos?.master?.vpeName}}
+                  <span *ngIf="sdwanInfos?.master?.manageIp">({{sdwanInfos?.master?.manageIp}})</span>
+                </span>
+              </li>
+              <li *ngIf="sdwanInfos?.master?.vpeIp">
+                <span class="name">VPE IP(公网):</span>
+                <span class="model">
+                  {{sdwanInfos?.master?.vpeIp}}
+                  <span>:</span>
+                  {{sdwanInfos?.master?.vpnPort}}
+                </span>
+              </li>
+              <li><span class="name">优先级:</span><span class="model">{{sdwanInfos?.master?.popPriority}}</span></li>
+              <li><span class="name">切换时间:</span><span class="model">{{sdwanInfos?.master?.haSwitchTime | date: 'yyyy-MM-dd HH:mm:ss'}}</span></li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul>
+              <li>
+                <span class="name">备链路:</span>
+                <span class="model">
+                  {{sdwanInfos?.slave?.lineName}}
+                  {{sdwanInfos?.slave?.tunnelType ? '(' + TunnelType[sdwanInfos.slave.tunnelType] +')' : ''}}
+                  <i *ngIf="sdwanInfos?.slave?.lineType === 'TUNNEL'" class="iconfont icon-cog"
+                     (click)="updateLineRef.openDialog(sdwanInfos.slave)" [appToolTip]="'链路配置'"></i>
+                </span>
+              </li>
+              <li *ngIf="sdwanInfos?.slave?.endpointName">
+                <span class="name">连接点:</span>
+                <span class="model">
+                  {{sdwanInfos?.slave?.endpointName}}
+                  <span *ngIf="sdwanInfos?.slave?.interfaceName">({{sdwanInfos?.slave?.interfaceName}})</span>
+                </span>
+              </li>
+              <li>
+                <span class="name">状态:</span>
+                <span class="model">
+                  <span [appToolTip]="sdwanInfos?.slave.rttText" *ngIf="sdwanInfos?.slave?.state=='Connected'" class="btn-sm btn-success">
+                    <span>{{sdwanInfos?.slave?.rtt}}</span>
+                  </span>
+                  <span [appToolTip]="sdwanInfos?.slave.rttText" *ngIf="sdwanInfos?.slave?.state=='Connecting'" class="btn-sm btn-warning">连接中</span>
+
+                  <span *ngIf="sdwanInfos?.slave?.state=='Disconnected'">
+                    <span *ngIf="selectedCe.os === 'vyos' || sdwanInfos?.master?.state==='Disconnected'">
+                      <span [appToolTip]="sdwanInfos?.slave.rttText" class="btn-sm btn-error">异常</span>
+                    </span>
+                    <span *ngIf="selectedCe.os !== 'vyos' && sdwanInfos?.master?.state==='Connected'">
+                      <span class="btn-sm btn-gray">备线</span>
+                    </span>
+                  </span>
+
+                  <span [style.marginLeft]="'5px'" class="color-sys" (click)="openMonitor(sdwanInfos?.slave)"><i class="iconfont icon-chart cursor-pointer" [appToolTip]="'查看监控'"></i></span>
+                 </span>
+              </li>
+              <li *ngIf="sdwanInfos?.slave?.heartBeat">
+                <span class="name">心跳时间:</span>
+                <span class="model">
+                  <span [ngStyle]="{'margin-right': '5px' }">{{sdwanInfos?.slave?.heartBeat2}}</span>
+                  ({{sdwanInfos?.slave?.heartBeat | date: 'yyyy-MM-dd HH:mm:ss'}})
+                </span>
+              </li>
+              <li>
+                <span class="name">CPE IP:</span>
+                <span class="model">
+                  {{sdwanInfos?.slave?.localIp}}
+                  <span *ngIf="sdwanInfos?.slave?.nicName">
+                    ({{sdwanInfos?.slave?.nicName}})
+                  </span>
+                </span>
+              </li>
+              <li *ngIf="sdwanInfos?.slave?.lineName === '专线'">
+                <span class="name">端口:</span>
+                <span class="model">{{sdwanInfos?.slave?.nicName}}</span>
+              </li>
+              <li *ngIf="sdwanInfos?.slave?.lineName === '专线'">
+                <span class="name">BGP ASN:</span>
+                <span class="model">remote as:{{sdwanInfos?.slave?.asn}}, local as:65535</span>
+              </li>
+              <li *ngIf="sdwanInfos?.slave?.monitorIp"><span class="name">Monitor IP:</span><span class="model">{{sdwanInfos?.slave?.monitorIp}}</span></li>
+              <li><span class="name">PE IP:</span><span class="model">{{sdwanInfos?.slave?.peIp}}</span></li>
+              <li *ngIf="sdwanInfos?.slave?.vlan"><span class="name">VLAN:</span><span class="model">{{sdwanInfos?.slave?.vlan}}</span></li>
+              <li *ngIf="sdwanInfos?.slave?.lineName === '公网'">
+                <span class="name">VPE:</span>
+                <span class="model">
+                  {{sdwanInfos?.slave?.vpeName}}
+                  <span *ngIf="sdwanInfos?.slave?.manageIp">({{sdwanInfos?.slave?.manageIp}})</span>
+                </span>
+              </li>
+              <li *ngIf="sdwanInfos?.slave?.vpeIp">
+                <span class="name">VPE IP(公网):</span>
+                <span class="model">
+                  {{sdwanInfos?.slave?.vpeIp}}
+                  <span>:</span>
+                  {{sdwanInfos?.slave?.vpnPort}}
+                </span>
+              </li>
+              <li><span class="name">优先级:</span><span class="model">{{sdwanInfos?.slave?.popPriority}}</span></li>
+              <li><span class="name">切换时间:</span><span class="model">{{sdwanInfos?.slave?.haSwitchTime | date: 'yyyy-MM-dd HH:mm:ss'}}</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="item"
+        *ngIf="currentTab.value === 'availableNetInfo' && ceInfos.ceInventory.connectionType === 'SDWAN' && ceInfos.ceInventory.l3Protocol === 'BGP'">
+      <h3>业务网段(本地私网网段) <i class="iconfont icon-cog" (click)="batchServiceCidrEleRf.openDialog()"
+                          [appToolTip]="'配置业务网段'"></i></h3>
+      <p *ngFor="let item of serviceCidrs.datas;index as i">
+        <span *ngIf="i < 10">{{item.cidr}}</span>
+      </p>
+      <p *ngIf="serviceCidrs.datas.length >= 10">
+        <a class="more" [appToolTip]="'配置业务网段'" [position]="'right'" (click)="batchServiceCidrEleRf.openDialog()">更多</a>
+      </p>
+    </li>
+
+    <li class="item" *ngIf="currentTab.value === 'availableNetInfo' && ceInfos.ceInventory.l3Protocol === 'NAT'">
+      <h3>目标网段<i [ngStyle]="{'margin-left':'5px'}" class="iconfont icon-cog" (click)="batchTargetCidrEleRf.openDialog()"
+                 [appToolTip]="'配置目标网段'"></i></h3>
+      <p *ngFor="let item of targetCidrs.datas;index as i">
+        <span *ngIf="i < 10">{{item.targetCidr}}</span>
+      </p>
+      <p *ngIf="targetCidrs.datas.length >= 10">
+        <a class="more" [appToolTip]="'目标网段'" [position]="'right'" (click)="batchTargetCidrEleRf.openDialog()">更多</a>
+      </p>
+    </li>
+
+    <li class="item" *ngIf="currentTab.value === 'availableNetInfo' && this.selectedCe.os === 'vyos'">
+      <h3>静态路由<i [ngStyle]="{'margin-left':'5px'}" class="iconfont icon-cog" (click)="batchRouteEleRf.openDialog()"
+                 [appToolTip]="'配置静态路由'"></i></h3>
+      <p *ngFor="let item of batchs.datas;index as i">
+        <span *ngIf="i < 10">{{item.destination}}</span>
+      </p>
+      <p *ngIf="batchs.datas.length >= 10">
+        <a class="more" [appToolTip]="'静态路由'" [position]="'right'" (click)="batchRouteEleRf.openDialog()">更多</a>
+      </p>
+    </li>
+
+    <li class="item" *ngIf="currentTab.value === 'availableNetInfo' && this.selectedCe.os === 'vyos'">
+      <h3>OSPF路由<i [ngStyle]="{'margin-left':'5px'}" class="iconfont icon-cog" (click)="updateOspfRef.openDialog()" [appToolTip]="'OSPF路由配置'"></i></h3>
+
+      <app-collapse *ngIf="ospfInfo.length>0" [ospfTitltInput]="ospfInfo" [collapseOn]="false" [hasBorder]="'true'" [iconVisible]="false">
+        <ul class="ospfList clearfix">
+          <li class="ospfItem">
+            <span class="name">OSPF Area：</span>
+            <span class="model">{{ospfInfo[0]?.area}}</span>
+          </li>
+          <li class="ospfItem">
+            <span class="name">Metrics：</span>
+            <span class="model">{{ospfInfo[0]?.metrics}}</span>
+          </li>
+          <li class="ospfItem">
+            <span class="name">Hello Interval：</span>
+            <span class="model">{{ospfInfo[0]?.helloInterval}}秒</span>
+          </li>
+          <li class="ospfItem">
+            <span class="name">Dead Interval：</span>
+            <span class="model">{{ospfInfo[0]?.deadInterval}}秒</span>
+          </li>
+          <li class="ospfItem">
+            <span class="name">Interface：</span>
+            <span class="model">{{ospfInfo[0]?.interfaceName}}</span>
+          </li>
+        </ul>
+      </app-collapse>
+    </li>
+
+    <li *ngIf="currentTab.value === 'availableNetInfo'" class="item">
+      <h3>WAN配置</h3>
+      <ul>
+        <li class="list" *ngFor="let item of ceInfos?.wanPortInventories">
+          <app-collapse [inputItem]="item" [chartVisible]="true" [collapseOn]="false" [hasBorder]="'true'" [iconVisible]="false" (done)="wanClickDone($event)">
+            <p>
+              <span class="name">开启NAT:</span>
+              <span class="model">
+                <app-el-switch
+                               [appToolTip]="item.natState === 'Enabled' ? '已开启' : '已关闭'" [model]="item.natState === 'Enabled'"
+                               (modelChange)="changeNatStateDone($event,item)" active-color="#13ce66"
+                               inactive-color="#d9534f"></app-el-switch>
+              </span>
+            </p>
+            <p><span class="name">状态：</span><span class="model">{{item.status}}</span></p>
+            <p><span class="name">规格：</span><span class="model">{{item.attribute | transOffering}}</span></p>
+            <p>
+              <span class="name">IP：</span>
+              <span class="model">
+                {{item.ipCidr}}
+                <span [appToolTip]="'刷新'" style="margin-left: 5px;">
+                  <i *ngIf="!refreshLoading" class="iconfont icon-refresh cursor-pointer" (click)="refreshIp(item)"></i>
+                  <i *ngIf="refreshLoading" class="iconfont icon-loading"></i>
+                </span>
+              </span>
+            </p>
+            <p><span class="name">网关：</span><span class="model">{{item.gateway}}</span></p>
+            <p><span class="name">IP获取方式：</span><span class="model">{{item.protocol === 'STATIC'? '静态':'DHCP'}}</span></p>
+            <p><span class="name">修改时间：</span><span
+              class="model">{{item.lastOpDate | date: 'yyyy-MM-dd HH:mm:ss'}}</span></p>
+          </app-collapse>
+        </li>
+      </ul>
+    </li>
+
+    <li *ngIf="currentTab.value === 'availableNetInfo'" class="item">
+      <h3>
+        LAN配置
+        <i class="iconfont icon-cog" *ngIf="ceInfos.ceInventory.connectionType == 'SDWAN' && isShowUpdateBDI"
+           (click)="updateLanRef.openDialog(ceInfos.lanInfoInventory)" [style.position]="'absolute'"
+           [appToolTip]="'配置LAN'"></i>
+      </h3>
+      <div class="des clearfix" *ngIf="ceInfos.ceInventory?.connectionType === 'SDWAN'">
+        <span class="name">状况：</span>
+        <span class="model">
+          <span *ngIf="ceInfos.lanInfoInventory?.state=='Enabled'" class="btn-sm btn-success">启用</span>
+          <span *ngIf="ceInfos.lanInfoInventory?.state=='Disabled'" class="btn-sm btn-error">禁用</span>
+        </span>
+        <span *ngIf="ceInfos.lanInfoInventory?.localIp" class="name">IP：</span><span class="model">{{ceInfos.lanInfoInventory?.localIp}}</span>
+        <span class="name">DHCP服务：</span>
+          <span class="model">{{ceInfos.lanInfoInventory?.dhcp?'启用':'禁用'}}
+        </span>
+        <span *ngIf="ceInfos.lanInfoInventory?.dns" class="name">DNS：</span><span class="model">{{ceInfos.lanInfoInventory?.dns}}</span>
+        <button [ngStyle]="{'margin-left': '5px','border':'0','width': 'auto','padding': '0 5px'}"
+                *ngIf="ceInfos.lanInfoInventory?.dhcp && selectedCe.frpWebPort && ceInfos.lanInfoInventory?.state=='Enabled' && ceInfos.lanInfoInventory?.dhcpStatus !=='relay'"
+                (click)="dhcpLeaseEleRf.openDialog()" class="btn-sm btn-primary">查看DHCP客户端</button>
+      </div>
+
+      <ul>
+        <li class="list" *ngFor="let item of ceInfos?.lanPortInventories">
+          <app-collapse [inputItem]="item" [collapseOn]="false" [hasBorder]="'true'" [iconVisible]="false" [chartVisible]="true" (done)="wanClickDone($event)">
+            <p>
+              <span class="name">状态：</span>
+              <span class="model">
+                {{item.status}}
+                <span [appToolTip]="'刷新'" style="margin-left: 5px;">
+                  <i *ngIf="!refreshLoading" class="iconfont icon-refresh cursor-pointer" (click)="refreshIp(item)"></i>
+                  <i *ngIf="refreshLoading" class="iconfont icon-loading"></i>
+                </span>
+              </span>
+            </p>
+            <p><span class="name">规格：</span><span class="model">{{item.attribute | transOffering}}</span></p>
+          </app-collapse>
+        </li>
+      </ul>
+    </li>
+
+    <li *ngIf="currentTab.value === 'availableNetInfo' && ceInfos.tunnelPortInventories.length" class="item">
+      <h3>专线信息</h3>
+      <ul>
+        <li class="list" *ngFor="let item of ceInfos?.tunnelPortInventories">
+          <app-collapse [inputItem]="item" [collapseOn]="false" [hasBorder]="'true'" [iconVisible]="false" [chartVisible]="true" (done)="wanClickDone($event)">
+            <p>
+              <span class="name">状态：</span>
+              <span class="model">
+                {{item.status}}
+                <span [appToolTip]="'刷新'" style="margin-left: 5px;">
+                  <i *ngIf="!refreshLoading" class="iconfont icon-refresh cursor-pointer" (click)="refreshIp(item)"></i>
+                  <i *ngIf="refreshLoading" class="iconfont icon-loading"></i>
+                </span>
+              </span>
+            </p>
+            <p><span class="name">规格：</span><span class="model">{{item.attribute | transOffering}}</span></p>
+            <p><span class="name">修改时间：</span><span
+              class="model">{{item.lastOpDate | date: 'yyyy-MM-dd HH:mm:ss'}}</span></p>
+          </app-collapse>
+        </li>
+      </ul>
+    </li>
+
+    <li *ngIf="currentTab.value === 'fireWallInfo'" class="item">
+      <h3 [ngStyle]="{'margin-bottom': '15px'}">防火墙配置<i [ngStyle]="{'margin-left':'5px'}" class="iconfont icon-cog"
+                                                        (click)="firewallEleRf.openDialog()" [appToolTip]="'配置防火墙'"></i>
+      </h3>
+      <div class="grid-wrapper">
+        <app-grid class="s-grid" [data]="fireWalls" [loading]="fireWallFridLoading">
+          <app-grid-column field="srcIP" header="源地址"></app-grid-column>
+          <app-grid-column field="destIP" header="目的地址"></app-grid-column>
+          <app-grid-column field="srcPort" header="源端口"></app-grid-column>
+          <app-grid-column field="destPort" header="目的端口"></app-grid-column>
+          <app-grid-column field="protocol" header="协议"></app-grid-column>
+          <app-grid-column field="direction" header="方向"></app-grid-column>
+          <app-grid-column field="action" header="操作"></app-grid-column>
+        </app-grid>
+        <app-pagination *ngIf="fireWallPagination.show" [(pageSize)]="fireWallPagination.size"
+                        (pageSizeChange)="fireWallPageChange($event, true)"
+                        [dataTotal]="fireWallPagination.total" [(currentPage)]="fireWallPagination.current"
+                        (currentPageChange)="fireWallPageChange($event, false)"
+                        [layout]="fireWallPagination.layout"></app-pagination>
+      </div>
+    </li>
+
+    <li  *ngIf="currentTab.value === 'fireWallInfo' && ceInfos.ceInventory?.connectionType === 'SDWAN'" class="item">
+      <h3>POP端口</h3>
+      <dl>
+        <dd *ngIf="sdwanInfos?.master?.vpnPort" [ngStyle]="{paddingLeft: '25px'}">主链路端口: {{sdwanInfos?.master?.vpnPort}}</dd>
+        <dd *ngIf="sdwanInfos?.slave?.vpnPort" [ngStyle]="{paddingLeft: '25px'}">备链路端口: {{sdwanInfos?.slave?.vpnPort}}</dd>
+      </dl>
+      <app-bottom-comment [comment]="'注：POP端口为SDWAN隧道所用端口。若CPE所在环境有防火墙需允许出方向访问该端口。'"></app-bottom-comment>
+    </li>
+
+    <li *ngIf="currentTab.value === 'Qos'" class="item">
+      <h3 [ngStyle]="{'margin-bottom': '15px'}">QoS规则<i [ngStyle]="{'margin-left':'5px'}" class="iconfont icon-cog"
+                                                        (click)="qosEleRf.openDialog()" [appToolTip]="'配置QoS'"></i></h3>
+      <div class="grid-wrapper">
+        <app-grid class="s-grid" [data]="Qoss" [loading]="qosLoading">
+          <app-grid-column field="srcIp" header="源地址"></app-grid-column>
+          <app-grid-column field="destIp" header="目的地址"></app-grid-column>
+          <app-grid-column field="srcPort" header="源端口"></app-grid-column>
+          <app-grid-column field="destPort" header="目的端口"></app-grid-column>
+          <app-grid-column field="protocol" header="协议"></app-grid-column>
+          <app-grid-column field="type" header="类型"></app-grid-column>
+          <app-grid-column field="level" header="优先级">
+            <ng-template #slot let-dataItem>
+              <span class="btn-sm bg-golden" [appToolTip]="'保障带宽:60%；最大带宽：100%'" *ngIf="dataItem.level === 'GOLD'">金</span>
+              <span class="btn-sm bg-silver" [appToolTip]="'保障带宽:20%；最大带宽：100%'" *ngIf="dataItem.level === 'SILVER'">银</span>
+              <span class="btn-sm bg-copper" [appToolTip]="'保障带宽:10%；最大带宽：100%'" *ngIf="dataItem.level === 'COPPER'">铜</span>
+            </ng-template>
+          </app-grid-column>
+          <app-grid-column field="operateType" header="属性">
+            <ng-template #slot let-dataItem>
+              <span *ngIf="dataItem.operateType === 'manual'">手动</span>
+              <span *ngIf="dataItem.operateType === 'auto'">自动</span>
+            </ng-template>
+          </app-grid-column>
+        </app-grid>
+        <app-pagination *ngIf="qosPagination.show" [(pageSize)]="qosPagination.size"
+                        (pageSizeChange)="qosPageChange($event, true)"
+                        [dataTotal]="qosPagination.total" [(currentPage)]="qosPagination.current"
+                        (currentPageChange)="qosPageChange($event, false)"
+                        [layout]="qosPagination.layout"></app-pagination>
+      </div>
+    </li>
+
+    <li *ngIf="currentTab.value === 'Qos'" class="item">
+      <h3>
+        SDWAN隧道带宽保障
+      </h3>
+      <p>
+        <span class="name" [ngStyle]="{width: '110px'}">启用隧道带宽保障:</span>
+        <span class="model">
+          <app-el-switch [ngStyle]="{top:'-1px',position:'relative'}" [appToolTip]="qosSdwanEnsureState ? '已启用' : '已禁用'"
+                           [(ngModel)]="qosSdwanEnsureState" active-color="#13ce66" (modelChange)="changeQosSdwanEnsureState($event)"
+                           inactive-color="#d9534f"></app-el-switch>
+        </span>
+      </p>
+      <app-bottom-comment [comment]="'注：启用后SDWAN隧道优先级为金，保障带宽为WAN带宽60%。用于保障WAN端口出方向的隧道带宽。'"></app-bottom-comment>
+    </li>
+
+    <li *ngIf="currentTab.value === 'Qos'" class="item">
+      <h3>
+        SDWAN隧道链路优化
+      </h3>
+      <p>
+        <span class="name" [ngStyle]="{width: '110px'}">启用链路优化:</span>
+        <span class="model">
+          <app-el-switch [ngStyle]="{top:'-1px',position:'relative'}" [appToolTip]="qosPopLossState ? '已启用' : '已禁用'"
+                           [(ngModel)]="qosPopLossState" active-color="#13ce66" (modelChange)="changeQosPopLossState($event)"
+                           inactive-color="#d9534f"></app-el-switch>
+        </span>
+      </p>
+      <p *ngIf="qosOptimizeDatas[0]?.popLoss === 'Enabled'" [ngStyle]="{overflow: 'hidden'}">
+        <span class="name" [ngStyle]="{width: '110px'}">丢包率阈值(%):</span>
+        <span class="model">{{qosOptimizeDatas[0].lossRate}}</span>
+      </p>
+      <app-bottom-comment [comment]="'注：链路优化只针对互联网SDWAN隧道优化，能显著改善隧道丢包率。开启后会占用更多互联网带宽。'"></app-bottom-comment>
+    </li>
+
+    <li *ngIf="currentTab.value === 'Qos'" class="item">
+      <h3>QoS带宽配置</h3>
+      <p>
+        <span class="name">WAN带宽:</span>
+        <span class="model">{{QosBandwidthInfo?.wanBandwidth}}(Mbps)
+          <i class="iconfont icon-cog" [appToolTip]="'WAN带宽配置'" (click)="qosBandwidthEleRf.openDialog(QosBandwidthInfo?.wanBandwidth)"></i>
+        </span>
+      </p>
+      <p>
+        <span class="name">POP带宽:</span>
+        <span class="model">{{QosBandwidthInfo?.popBandwidth}}(Mbps)</span>
+      </p>
+      <p>
+        <span class="name">专线带宽:</span>
+        <span class="model">
+          {{QosBandwidthInfo?.tunBandwidth}}(Mbps)
+          <i class="iconfont icon-cog" [appToolTip]="'专线带宽配置'" (click)="qosBandwidthEleRf.openDialog(QosBandwidthInfo?.tunBandwidth,true)"></i>
+        </span>
+      </p>
+    </li>
+
+    <li *ngIf="currentTab.value === 'Qos'" class="item">
+      <div class="qosLevelTips">
+        <app-bottom-comment [comment]="'优先级提示:'"></app-bottom-comment>
+        <div class="detail">
+          <p> <span>优先级</span> <span>保障带宽</span> <span>最大带宽</span> </p>
+          <p> <span>金</span> <span>60% </span> <span>100%</span> </p>
+          <p> <span>银</span> <span>20% </span> <span>100%</span> </p>
+          <p> <span>铜</span> <span>10% </span> <span>100%</span> </p>
+          <p> <span>默认</span> <span>10% </span> <span>100%</span> </p>
+        </div>
+      </div>
+    </li>
+
+    <li *ngIf="currentTab.value === 'policy'" class="item">
+      <div class="text-tips" [ngStyle]="{marginBottom: '15px'}">
+        <span>注：策略路径只对LAN口IN方向的流量有效，启用后主／备链路会开启SNAT。</span>
+      </div>
+      <div class="policyPath">
+        <div class="form-group">
+          <span class="name">是否启用</span>
+          <span class="model">
+            <app-el-switch [ngStyle]="{top:'-1px',position:'relative'}" [appToolTip]="policyPathInfoPage.state ? '已启用' : '已禁用'"
+                           [(ngModel)]="policyPathInfoPage.state" active-color="#13ce66" (modelChange)="changeStrategyPathState($event)"
+                           inactive-color="#d9534f"></app-el-switch>
+          </span>
+        </div>
+        <div *ngIf="policyPathInfoPage.state">
+          <div class="form-group loadBalance">
+            <span class="name">链路</span>
+            <span class="model">
+              <div class="">
+                <div class="_item" [ngStyle]="{overflow: 'hidden'}">
+                  <span class="name">主链路：</span>
+                  <span class="model">
+                    <select [ngStyle]="{float:'left',marginRight:'20px'}" (change)="unbindDisabled();changeMasterLink()" class="form-control" name="masterLinkUuid" #masterLinkUuid='ngModel' [(ngModel)]="policyPathInfoPage.masterWanUuid">
+                      <option [value]="''">默认</option>
+                      <option *ngFor="let item of wanLinks[0].list" [value]="item.wanUuid">{{item.text}}</option>
+                    </select>
+                    <span class="error" *ngIf="showPolicyWanMasterLinkTips">请选择链路</span>
+                  </span>
+                </div>
+                <div class="_item" [ngStyle]="{'marginTop':'10px',overflow: 'hidden'}">
+                  <span class="name">备链路：</span>
+                  <span class="model">
+                    <select [ngStyle]="{float:'left',marginRight:'20px'}" (change)="unbindDisabled();;changeSlaveLink()" class="form-control" name="slaveLinkUuid" #slaveLinkUuid='ngModel' [(ngModel)]="policyPathInfoPage.slaveWanUuid">
+                      <option [value]="''">默认</option>
+                      <option *ngFor="let item of wanLinks[1].list" [value]="item.wanUuid">{{item.text}}</option>
+                    </select>
+                    <span class="error" *ngIf="showPolicyWanSlaveLinkTips">请选择链路</span>
+                  </span>
+                </div>
+              </div>
+            </span>
+          </div>
+          <div class="form-group">
+            <span class="name">类型</span>
+            <span class="model">
+              <app-btn-group [models]="policyPathTypes" [(ngModel)]="policyPathInfoPage.type" (modelChange)="strategyPathTypeChange($event)"></app-btn-group>
+            </span>
+          </div>
+          <div class="form-group loadBalance" *ngIf="policyPathInfoPage.type === 'LoadBalance'">
+            <span class="name">优先级</span>
+            <span class="model">
+              <div class="form-group-item" *ngFor="let it of policyPathInfoPage.loadBalances;index as i">
+                <div class="_item">
+                  <span class="name">连接链路</span>
+                  <span class="model">{{it.haTypeName}}</span>
+                </div>
+                <div class="_item">
+                  <span class="name">优先级</span>
+                  <span class="model">
+                    <select (change)="unbindDisabled();" class="form-control" name="m_priority" #m_priority='ngModel' [(ngModel)]="it.priority">
+                      <option *ngFor="let item of prioritys" [value]="item.value">{{item.text}}</option>
+                    </select>
+                  </span>
+                </div>
+                <div class="_item" *ngIf="policyPathInfoPage.loadBalances[0].priority === policyPathInfoPage.loadBalances[1].priority">
+                  <span class="name">权重</span>
+                  <span class="model">
+                    <input (input)="unbindDisabled();" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" class="form-control" name="m_weighting" #m_weighting='ngModel' [(ngModel)]="it.weight">
+                  </span>
+                </div>
+              </div>
+
+              <div *ngIf="!policyPathInfoPage.loadBalances.length">
+                <span class="empty-text">暂无数据</span>
+              </div>
+            </span>
+          </div>
+          <div class="form-group" [hidden]="!(policyPathInfoPage.type === 'App')">
+            <span class="name">应用策略</span>
+            <span class="model">
+              <div class="grid-wrapper">
+                <app-grid [hasBorder]="true" class="s-grid" [data]="policyPathInfoPage.apps" [currentRowIndex]="currentAilRowIndex">
+                  <app-grid-column field="name" width="80px">
+                    <ng-template #header>
+                      <input (change)="selectAllApp(app_input_box)" type="checkbox" name="" [(ngModel)]="app_input_box">全选
+                    </ng-template>
+                    <ng-template #slot let-dataItem>
+                      <span *ngIf="dataItem.type !== 'DEFAULT'"><input (change)="clickAppId()" [(ngModel)]="dataItem.status" [(checked)]="app_input_box" type="checkbox"/></span>
+                    </ng-template>
+                  </app-grid-column>
+                  <app-grid-column field="name" header="应用名称">
+                    <ng-template #slot let-dataItem>
+                      {{dataItem.name === 'DEFAULT' ? '默认' : dataItem.name}}
+                      <i *ngIf="dataItem.name !== 'DEFAULT'" class="iconfont icon-edit" [appToolTip]="'修改名称'" (click)="updateAppName(dataItem)"></i>
+                    </ng-template>
+                  </app-grid-column>
+                  <app-grid-column field="level" header="链路">
+                    <ng-template #slot let-dataItem>
+                      <select (change)="unbindDisabled();" class="form-control" name="nicName" #nicName='ngModel' [(ngModel)]="dataItem.popUuid">
+                        <option *ngFor="let item of ailLinks" [value]="item.value">{{item.text}}</option>
+                      </select>
+                    </ng-template>
+                  </app-grid-column>
+                  <app-grid-column field="" header="流量监控">
+                    <ng-template #slot let-dataItem>
+                      <span class="btn-sm" [style.color]="'#00c1e0'" (click)="openAppMonitor(dataItem)"><i class="iconfont icon-chart cursor-pointer" [appToolTip]="'查看监控'"></i></span>
+                    </ng-template>
+                  </app-grid-column>
+                  <app-grid-column field="level" header="故障切换">
+                    <ng-template #slot let-dataItem>
+                      <app-el-switch [ngStyle]="{top:'-1px',position:'relative'}" [appToolTip]="dataItem.failover ? '已启用' : '已禁用'"
+                           [(ngModel)]="dataItem.failover" active-color="#13ce66" inactive-color="#d9534f" (modelChange)="unbindDisabled();"></app-el-switch>
+                      <!--<span class="btn-sm" [ngClass]="{'btn-success':dataItem.failover,'btn-error':!dataItem.failover}">{{dataItem.failover ? '已启用' : '已禁用'}}</span>-->
+                    </ng-template>
+                  </app-grid-column>
+                  <app-grid-column header="操作" width="80px">
+                    <ng-template #slot let-dataItem let-rowIndex="rowIndex">
+                      <a class="sys-link" *ngIf="dataItem.type !== 'DEFAULT'" (click)="configAppDefination(dataItem)">编辑</a>
+                    </ng-template>
+                  </app-grid-column>
+                </app-grid>
+              </div>
+            </span>
+          </div>
+          <div class="form-group margin-l-100">
+            <button *ngIf="policyPathInfoPage.state && policyPathInfoPage.type === 'App'" class="btn-primary" type="button" (click)="addApplicationLinkClick()"><i class="iconfont icon-plus"></i>添加应用链路</button>
+            <button *ngIf="policyPathInfoPage.state && policyPathInfoPage.type === 'App'" class="btn-primary" [disabled]="!selectedApps.length" (click)="deleteApplicationLinkClick()">删除</button>
+            <button class="btn-primary" [disabled]="policyPathInfoPage.isDisabledSave || showPolicyWanMasterLinkTips || showPolicyWanSlaveLinkTips" type="button" (click)="policyPathConfirm()">保存</button>
+            <span *ngIf="isStrategyPathSave" class="error">链路不能为空</span>
+            <span *ngIf="isNullWeight && policyPathInfoPage.loadBalances[0].priority === policyPathInfoPage.loadBalances[1].priority" class="error">权重不能为空</span>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li *ngIf="currentTab.value === 'other'" class="item">
+      <h3>专线纳管</h3>
+      <p>
+        <span class="name" [ngStyle]="{width: '110px'}">启用专线纳管:</span>
+        <span class="model">
+          <app-el-switch [ngStyle]="{top:'-1px',position:'relative'}" [appToolTip]="ceTunnelManageState ? '已启用' : '已禁用'"
+                           [(ngModel)]="ceTunnelManageState" active-color="#13ce66" (modelChange)="changeCeTunnelManageState($event)"
+                           inactive-color="#d9534f"></app-el-switch>
+        </span>
+      </p>
+      <app-bottom-comment [comment]="'注：专线纳管用于CPE采用SDWAN专线接入方式时当互联网线路故障断开，通过专线网络和控制器互通。'"></app-bottom-comment>
+    </li>
+  </ul>
+</app-right-modal>
+
+<app-single-mointor #singleMonitor [selectedEsn]="selectedMonitorData.esn" [selectedUuid]="selectedMonitorData.uuid"
+                    [selectedName]="selectedMonitorData.name" [selectedMonitorData]="selectedMonitorData"
+                    [cpeName]="selectedMonitorData.cpeName"></app-single-mointor>
+<app-ce-update #update [selectedCe]="selectedCe" (done)="updateDone($event)"></app-ce-update>
+<app-ce-update-wan #updateWan (done)="updateCePortDone()"></app-ce-update-wan>
+<app-ce-update-lan #updateLan (done)="updateLanInfoDone($event)"></app-ce-update-lan>
+<app-ce-update-ospf #updateOspf [ospfInfo]="ospfInfo" [ceUuid]="selectedCe?.uuid" (done)="updateOspfDone($event)"></app-ce-update-ospf>
+<app-ce-update-bandwidth #updateCeBandwidth [ceInfos]="ceInfos"
+                         (done)="updateBandwidthDone($event)"></app-ce-update-bandwidth>
+<app-ce-update-vpn-type #updateCeVpnType [ceInfos]="ceInfos"
+                        (done)="updateVpnTypeDone($event)"></app-ce-update-vpn-type>
+<app-ce-update-line #updateLine [selectedCe]="selectedCe" (done)="updateLineDone($event)"></app-ce-update-line>
+<app-ce-update-connection-mode #updateCeConnectionMode [ceInfos]="ceInfos"
+                               (done)="updateConnectionModeDone($event)"></app-ce-update-connection-mode>
+<app-batch-service-cidr-list #batchServiceCidr [selectedCe]="selectedCe" [resourceQuotaNumber]="resourceQuota?.serviceCidrNum" (done)="batchServiceCidrDone($event)"></app-batch-service-cidr-list>
+<app-batch-target-cidr-list #batchTargetCidr [selectedCe]="selectedCe" [resourceQuotaNumber]="resourceQuota?.targetCidrNum" (done)="batchTargetCidrDone($event)"></app-batch-target-cidr-list>
+<app-batch-route-list #batchRoute [selectedCe]="selectedCe" [resourceQuotaNumber]="resourceQuota?.routeNum" (done)="batchRouteDone($event)"></app-batch-route-list>
+<app-firewall-list #firewall [selectedItem]="selectedCe" [resourceQuotaNumber]="resourceQuota?.firewallNum" (done)="firewallDone($event)"></app-firewall-list>
+<app-qos-list #qos [selectedItem]="selectedCe" [resourceQuotaNumber]="resourceQuota?.qosNum" (done)="qosDone($event)"></app-qos-list>
+<app-common-window #deleteServiceCidr [title]="deleteServiceCidrCommonOption.title" [message]="deleteServiceCidrCommonOption.message" (done)="deleteServiceCidrDone()"></app-common-window>
+<app-common-window #deleteTargetCidr [title]="deleteTargetCidrCommonOption.title" [message]="deleteTargetCidrCommonOption.message" (done)="deleteTargetCidrDone()"></app-common-window>
+<app-common-window #deleteRoute [title]="deleteRouteCommonOption.title" [message]="deleteRouteCommonOption.message" (done)="deleteRouteDone()"></app-common-window>
+<app-common-window #deleteFirewall [title]="deleteFirewallCommonOption.title" [message]="deleteFirewallCommonOption.message" (done)="deleteFirewallDone()"></app-common-window>
+<app-common-window #deleteQos [title]="deleteQosCommonOption.title" [message]="deleteQosCommonOption.message" (done)="deleteQosDone()"></app-common-window>
+<app-cpe-update-agent-version #updateCeAgentVersion [ceInfos]="ceInfos" (done)="updateAgenVersionDone($event)"></app-cpe-update-agent-version>
+<app-common-window #firewallAttention [title]="firewallAttentionOption.title" [message]="firewallAttentionOption.message" (cancelDone)="firewallAttentionCancelDone()" (done)="firewallAttentionDone()"></app-common-window>
+<app-qos-bandwidth #qosBandwidth [selectedCe]="selectedCe" (done)="qosBandwidthDone($event)"></app-qos-bandwidth>
+<app-common-window #disable [title]="disableCommonOption.title" [message]="disableCommonOption.message" (cancelDone)="disableCancelDone()" (done)="disableDone()"></app-common-window>
+<app-common-window #enable [title]="enableCommonOption.title" [message]="enableCommonOption.message" (cancelDone)="enableCancelDone()" (done)="enableDone()"></app-common-window>
+<app-ce-add-application-link #addApplicationLink [selectedCe]="selectedCe" [ailLinks] = "ailLinks" (done)="addApplicationLinkDone($event)"></app-ce-add-application-link>
+<app-ce-update-application-link #updateApplicationLink [app]="selectedApp" (done)="updateApplicationNameDone($event)"></app-ce-update-application-link>
+<app-common-window #deleteApplicationLink [title]="deleteAppCommonOption.title" [message]="deleteAppCommonOption.message" (done)="deleteAppDone()"></app-common-window>
+<app-ce-application-link-detail-list #ailDetailList [selecedItem]="selectedAil" (done)="updateApplicationLinkDone($event)"></app-ce-application-link-detail-list>
+<app-common-window #ailDetailDelete [title]="deleteAppDefinitionCommonOption.title" [message]="deleteAppDefinitionCommonOption.message" (done)="deleteAppDefinitionDone()"></app-common-window>
+<app-common-window #disableStrategyPath [title]="disableStrategyPathCommonOption.title" [message]="disableStrategyPathCommonOption.message" (cancelDone)="disableStrategyPathCancelDone()" (done)="policyPathConfirm()"></app-common-window>
+<app-ce-dhcp-lease #dhcpLease [selectedCe]="selectedCe"></app-ce-dhcp-lease>
+<app-app-mointor #appMonitor [selectedUuid]="selectedAil.uuid" [selectedName]="selectedAil.name" ></app-app-mointor>
+<app-system-mointor #sysMonitor [esn_id]="selectedCe?.esn"></app-system-mointor>
+<app-common-window #enableNat [title]="enableNatStateCommonOption.title" [message]="enableNatStateCommonOption.message" (cancelDone)="enableNatCancelDone()" (done)="enableNatDone()"></app-common-window>
+<app-common-window #disableNat [title]="disableNatStateCommonOption.title" [message]="disableNatStateCommonOption.message" (cancelDone)="disableNatCancelDone()" (done)="disableNatDone()"></app-common-window>
+<app-ce-update-bfd #updateBfd [selectedCe]="selectedCe" (done)="ceUpdateBfdDone($event)" ></app-ce-update-bfd>
+<app-common-window #changeQosSdwanEnsure [title]="changeQosSdwanEnsureOption.title" [message]="changeQosSdwanEnsureOption.message" (cancelDone)="changeQosSdwanCancelDone()" (done)="changeQosSdwanDone()"></app-common-window>
+<app-common-window #changeQosPopLoss [title]="changePopLossOption.title" [message]="changePopLossOption.message"
+                   (cancelDone)="changeQosSdwanCancelDone()" (done)="changePopLossDone()"></app-common-window>
+<app-common-window #updateCeTunnelManage [title]="updateCeTunnelManageOption.title" [message]="updateCeTunnelManageOption.message" (cancelDone)="updateCeTunnelManageCancelDone()" (done)="updateCeTunnelManageDone()"></app-common-window>
+<app-ce-sdwan-mointor #ceSdwanMonitor [esn_id]="selectedCe?.esn" [if_name]="selectedWan?.name" ></app-ce-sdwan-mointor>
+<app-ce-open-qos-poploss #ceOpenQosPoploss [selectedLossRate]="qosOptimizeDatas[0]?.lossRate" (done)="ceOpenQosPoplossDone($event)"></app-ce-open-qos-poploss>
+
+<app-loading-window #loading></app-loading-window>

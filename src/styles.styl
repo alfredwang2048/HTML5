@@ -1,0 +1,412 @@
+html
+  width: 100%
+  height: 100%
+  -webkit-text-size-adjust: 100%
+  -ms-text-size-adjust: 100%
+body
+  margin: 0
+  width: 100%
+  height: 100%
+  font-size: 12px
+  line-height: 1
+  color: #333
+  font-family: Helvetica,Arial,PingFangSC-Light,"Hiragina Sans GB","WenQuanYi Micro Hei",'microsoft yahei ui','microsoft yahei',sans-serif
+  -webkit-tap-highlight-color: rgba(0,0,0,0)
+  /*-webkit-font-smoothing: antialiased*/
+  -moz-osx-font-smoothing: grayscale
+*
+  -webkit-box-sizing: border-box
+  -moz-box-sizing: border-box
+  box-sizing: border-box
+ul,ol,h1,h2,h3,h4,h5,h6,p,dl
+  margin: 0
+  padding: 0
+ul,ol
+  list-style: none
+dd
+  margin-left: 0
+a
+  text-decoration: none
+  color: #333
+textarea
+  vertical-align: top
+  overflow: auto
+  background-image: none
+.form-control
+  display: block
+  width: 100%
+  height: 30px
+  padding: 6px 12px
+  font-size: 12px
+  line-height: 1.428571429
+  color: #555
+  vertical-align: middle
+  border: 1px solid #ccc
+  border-radius: 2px
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075)
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.075)
+  -webkit-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s
+  transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s
+  background-color: #fff
+  &:focus
+    border-color: #00c1e0
+    outline: 0
+    box-shadow: inset 0 1px 1px rgba(0,193,224,.075)
+textarea.form-control
+  height: 80px
+.clearfix
+  &::after
+    display: table
+    content: ''
+    clear: both
+.btn-default, .btn-primary
+  display: inline-block
+  margin-bottom: 0
+  padding: 0 12px
+  height: 30px
+  border: 1px solid transparent
+  border-radius: 2px
+  font-size: 12px
+  font-weight: normal
+  line-height: 30px
+  text-align: center
+  white-space: nowrap
+  vertical-align: middle
+  cursor: pointer
+  -webkit-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+  -o-user-select: none
+  user-select: none
+.btn-default
+  border-color: #ddd
+  color: #333
+  background: #fff
+.btn-primary
+  border-color: #2babbc
+  color: #fff
+  background: #00c1e0
+  &[disabled]
+    border-color: #46b8da
+    background: #5bc0de
+    cursor: not-allowed
+    opacity 0.7
+  &:hover
+    border-color: #269abc
+    background: #2babbc
+.dialog-body-wrapper
+  padding: 10px 20px
+.dialog-btn-wrapper
+  padding: 10px 0
+  text-align: center
+  background: #e1eef0
+  button
+    display: inline-block
+    margin-right: 10px
+.title
+  padding-left: 15px
+  height: 50px
+  font-size: 14px
+  line-height: 50px
+  border-bottom: 1px solid #e6e6e6
+.alert-info
+  margin: 15px 0;
+  padding: 0 10px
+  border: 1px solid #00c1e0
+  border-radius: 3px
+  line-height: 30px
+  font-size: 12px
+  color: #333
+  background: #b2ecf6
+.content-menu
+  padding: 15px
+.form-group
+  margin-bottom: 15px
+  &::after
+    clear both
+    content ''
+    display block
+  .form-label
+    float: left
+    display: block
+    height: 30px
+    line-height: 30px
+  .form-statics-text
+    height: 30px
+    line-height: 30px
+  .form-error
+    .error
+      line-height: 28px
+      color: #a94442
+ .ng-dirty.ng-invalid:not(form)
+    border: 1px solid #a94442
+.red
+  color: #a94442
+.blue
+  color: #00c1e0
+.btn-container
+  margin: 0 -15px
+  padding-top: 10px
+  padding-bottom: 10px
+  text-align: center
+  button
+    margin-right: 8px
+/* 重置UI样式 */
+.notice
+  margin-top: 15px
+  color: #00c1e0
+.btn-success
+  background #5cb85c
+  display inline-block
+  border-radius 0.25rem
+  text-align center
+  padding .2em .6em .3em
+  color #fff
+  white-space nowrap
+  font-weight bold
+.btn-error
+  background #d9534f
+  display inline-block
+  border-radius 0.25rem
+  text-align center
+  padding .2em .6em .3em
+  color #fff
+  white-space nowrap
+  font-weight bold
+.btn-warning
+  background #f0ad4e
+  display inline-block
+  border-radius 0.25rem
+  text-align center
+  padding .2em .6em .3em
+  color #fff
+  white-space nowrap
+  font-weight bold
+.btn-sys
+  background #00c1e0
+  display inline-block
+  border-radius 0.25rem
+  text-align center
+  padding .2em .6em .3em
+  color #fff
+  white-space nowrap
+  font-weight bold
+.btn-gray
+  background #909399
+  display inline-block
+  border-radius 0.25rem
+  text-align center
+  padding .2em .6em .3em
+  color #fff
+  white-space nowrap
+  font-weight bold
+.btn-sm
+  width 40px
+  height 20px
+  line-height 20px
+  display: inline-block;
+  border-radius: 0.25rem;
+  text-align: center;
+  padding: 0;
+  color: #fff;
+  white-space: nowrap;
+  font-weight: bold;
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control
+    cursor: not-allowed;
+    background-color: #eee;
+/*字体图标*/
+.icon-plus{
+    font-size: 12px;
+}
+.iconfont{
+    font-size: 14px;
+}
+.glyphicon-calendar:before{
+    content:"\e640"
+}
+.glyphicon-remove:before{
+    content: "\e66e";
+}
+.icon-loading{
+    animation: circle-animate 2s linear infinite;
+    -webkit-animation: circle-animate 2s linear infinite;
+    display: inline-block;
+}
+input[type='radio']
+  width 15px !important
+  height 15px
+  display inline-block
+  margin 0 5px
+.height-0
+  height: 0
+@media screen and (max-height: 600px)
+  .dialog-wrapper
+    .dialog
+      top: 0 !important;
+      left: 0 !important;
+      margin: 30px auto !important;
+.ip-input-group
+  span
+    display inline-block
+    width 30px
+    height 30px
+    text-align center
+    line-height 30px
+    float left
+    input
+      width 100%!important
+      height 30px
+      padding 0
+      text-align center
+
+/* 重置日期区间组件 */
+.daterangepicker .drp-buttons .btn
+  padding: 0
+
+/*通用组*/
+.btn-group
+  &:after
+    display block
+    content ''
+    clear both
+  button
+    width: 95px;
+    height: 30px;
+    color: #333;
+    background: none;
+    border: 1px solid #ccc;
+    outline none
+    margin-right 0
+    border-right 0
+    margin-left -1px
+    position relative
+    cursor pointer
+    font-size 12px
+    float left
+    border-radius 0
+    &:first-child
+      margin-left 0
+    &:last-child
+      border-right 1px solid #ccc
+    &.active
+      border: 1px solid #00c1e0;
+      background: rgba(188, 237, 245, .38);
+      color: #00c1e0;
+      outline none
+      z-index 2
+      transition all ease-in-out .3s
+    &:hover
+      background #eee
+button:focus
+  outline none
+.cursor-pointer
+  cursor: pointer
+.icon-chart
+  font-weight: bold
+/*tool-tip提示框*/
+.tooltip
+    position: absolute;
+    left: 0;
+    z-index: 1070;
+    padding: 5px 0;
+    /*transition: all ease-in-out .3s;*/
+    opacity: 0.9;
+    display: none;
+    .tooltip-arrow
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-color: transparent;
+        border-style: solid;
+        bottom: 0;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px 5px 0;
+        border-top-color: #000;
+    .tooltip-inner
+        padding: 0 8px;
+        color: #fff;
+        text-align: center;
+        background-color: #000;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        line-height 30px
+    &.left
+      bottom: 0;
+      left: inherit;
+      padding 0
+      height 30px
+      .tooltip-arrow
+        top: 50%;
+        right: 0;
+        margin-top: -5px;
+        border-width: 5px 0 5px 5px;
+        border-left-color: #000;
+        border-top-color: transparent;
+        left: 100%;
+        margin-left 0
+    &.right
+      bottom: 0;
+      right: inherit;
+      padding 0
+      height 30px
+      .tooltip-arrow
+        top: 50%;
+        left: 0;
+        margin-top: -5px;
+        margin-left: -5px;
+        border-width: 5px 5px 5px 0;
+        border-right-color: #000;
+        border-top-color: transparent;
+        right: 100%;
+input[type='checkbox']
+  width: 13px !important;
+  padding: 0;
+  height: 13px;
+  display inline-block
+  position: relative;
+  margin: 0 2px 0 0;
+
+.float-right
+  float: right
+.float-left
+  float: left
+.text-tips
+  font-size: 12px
+  color: #333
+  background: #b2ecf6
+  line-height: 30px
+  border: 1px solid #00c1e0
+  border-radius: 3px
+  padding 0 10px
+.rightTitleIcon
+  color: #00c1e0
+  font-size 18px
+  position relative
+  top 2px
+.label-gray
+  background #909399
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #999;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #999;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #999;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    #999;
+}
+.grid-drop-menu
+  li
+    border-bottom: 1px solid #ebebec;
+.bg-golden
+  background #FFD700
+.bg-silver
+  background #909399
+.bg-copper
+  background #e6a23c
+.color-sys
+  color #00c1e0

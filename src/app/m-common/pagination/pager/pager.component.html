@@ -1,0 +1,6 @@
+<ul class="pager">
+  <li *ngFor="let page of pagers" [ngClass]="{ellipsis: page.isEllipsis,current: page.isCurrent,normal: !page.isEllipsis}" (click)="clickHandler(page)">
+    <ng-container *ngIf="!page.isEllipsis">{{page.number}}</ng-container>
+    <ng-container *ngIf="page.isEllipsis">...</ng-container>
+  </li>
+</ul>

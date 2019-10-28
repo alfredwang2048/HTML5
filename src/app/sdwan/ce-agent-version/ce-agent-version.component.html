@@ -1,0 +1,43 @@
+<div class="height-0">
+  <app-loading-window #loading></app-loading-window>
+  <app-common-window #delete [title]="deleteCommonOption.title" [message]="deleteCommonOption.message" (done)="deleteDone()"></app-common-window>
+  <app-ce-agent-version-update [selectedAgentVersion]="selectedItem" (done)="updateDone($event)" #update></app-ce-agent-version-update>
+</div>
+<div class="title">Agent版本管理</div>
+<app-nav-tabs [style]="{marginTop: '20px',marginBottom: 0}" [width]="'100px'" [lists]="navTabLists" [(ngModel)]="currentTab" (modelChange)="navTabsDone($event)"></app-nav-tabs>
+<div class="content-menu">
+  <app-ce-agent-version-add (done)="createDone($event)"></app-ce-agent-version-add>
+  <!--<app-ce-agent-version-search (done)="searchDone($event)"></app-ce-agent-version-search>-->
+</div>
+<div class="grid-wrapper">
+  <app-grid class="s-grid" [data]="versionLists" [loading]="gridLoading">
+    <app-grid-column field="version" header="版本"></app-grid-column>
+    <app-grid-column field="url" header="路径"></app-grid-column>
+    <app-grid-column field="os" header="os"></app-grid-column>
+    <app-grid-column field="description" header="描述"></app-grid-column>
+
+    <app-grid-column field="createDate" header="创建时间">
+      <ng-template #slot let-dataItem>
+        {{dataItem.createDate | date: 'yyyy-MM-dd HH:mm:ss'}}
+      </ng-template>
+    </app-grid-column>
+
+    <app-grid-column header="操作" width="80px">
+      <ng-template #slot let-dataItem>
+        <app-w-dropdown (click)="selectedRow(dataItem)">
+          <ng-container drop-type="toggle">更多</ng-container>
+          <ul drop-type="menu" class="grid-drop-menu">
+            <li (click)="openUpdateWin()">修改</li>
+            <li (click)="openDeleteWin()">删除</li>
+          </ul>
+        </app-w-dropdown>
+      </ng-template>
+    </app-grid-column>
+
+  </app-grid>
+
+  <app-pagination *ngIf="pagination.show" [(pageSize)]="pagination.size" (pageSizeChange)="pageChange($event, true)"
+                  [dataTotal]="pagination.total" [(currentPage)]="pagination.current"
+                  (currentPageChange)="pageChange($event, false)" [layout]="pagination.layout"></app-pagination>
+</div>
+

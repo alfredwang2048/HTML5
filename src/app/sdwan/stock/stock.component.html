@@ -1,0 +1,53 @@
+<div style="height: 0">
+  <app-loading-window #loading></app-loading-window>
+  <app-common-window #delete [title]="deleteCommonOption.title" [message]="deleteCommonOption.message" (done)="deleteDone()"></app-common-window>
+  <app-common-window #init [title]="initCommonOption.title" [message]="initCommonOption.message" (done)="initDone()"></app-common-window>
+  <app-stock-attach #attachAccount [selectedStock]="selectedStock" (done)="attachAccountDone($event)"></app-stock-attach>
+  <app-stock-detail #detail [selectedItem]="selectedStock"></app-stock-detail>
+</div>
+<div class="title">CPE库存管理</div>
+<div class="content-menu">
+  <app-stock-create (done)="createStockDone($event)"></app-stock-create>
+  <app-stock-search (done)="searchDone($event)" [searchInitObj]="searchInitObj"></app-stock-search>
+</div>
+<div class="grid-wrapper">
+  <app-grid class="s-grid" [data]="stocks" (selection-change)="showDetail($event)" [loading]="gridLoading">
+    <app-grid-column field="number" header="序号"></app-grid-column>
+    <app-grid-column field="esn" header="ESN号"></app-grid-column>
+    <app-grid-column field="model" header="CPE型号"></app-grid-column>
+    <app-grid-column field="createDate" header="创建时间">
+      <ng-template #slot let-dataItem>
+        {{dataItem.createDate | date: 'yyyy-MM-dd HH:mm:ss'}}
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column field="status" header="状态">
+      <ng-template #slot let-dataItem>
+        <span *ngIf="dataItem.status=='online'" class="btn-sm btn-success">已连接</span>
+        <span *ngIf="dataItem.status=='offline'" class="btn-sm btn-error">未连接</span>
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column field="state" header="状况">
+      <ng-template #slot let-dataItem>
+        <span *ngIf="dataItem.state=='Enabled'" class="btn-sm btn-success">启用</span>
+        <span *ngIf="dataItem.state=='Disabled'" class="btn-sm btn-error">禁用</span>
+        <span *ngIf="dataItem.state=='Deleted'" class="btn-sm btn-warning">库存</span>
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column header="操作" width="80px">
+      <ng-template #slot let-dataItem let-rowIndex="rowIndex">
+        <app-w-dropdown (click)="selectedRow(dataItem)">
+          <ng-container drop-type="toggle">更多</ng-container>
+          <ul drop-type="menu" class="grid-drop-menu">
+            <li (click)="attachAccount.openDialog()">指定客户</li>
+            <li (click)="openDeleteWin(dataItem, rowIndex)">删除</li>
+            <li *ngIf="dataItem.status !== 'offline'" (click)="openInitWin(dataItem, rowIndex)">初始化</li>
+          </ul>
+        </app-w-dropdown>
+      </ng-template>
+    </app-grid-column>
+  </app-grid>
+  <app-pagination *ngIf="pagination.show" [(pageSize)]="pagination.size" (pageSizeChange)="pageChange($event, true)"
+                  [dataTotal]="pagination.total" [(currentPage)]="pagination.current"
+                  (currentPageChange)="pageChange($event, false)" [layout]="pagination.layout"></app-pagination>
+</div>
+

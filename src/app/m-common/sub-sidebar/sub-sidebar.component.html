@@ -1,0 +1,17 @@
+<div class="sub-sidebar">
+  <h2>{{model.title}}</h2>
+  <ol>
+    <li class="item" *ngFor="let submenu of model.submenu">
+      <a class="sub-link" [routerLink]="submenu.href" routerLinkActive="active"
+         *ngIf="!submenu.isDrop && submenu.innerSkip">{{submenu.title}}</a>
+      <a class="sub-link" [href]="submenu.href" *ngIf="!submenu.isDrop && !submenu.innerSkip">{{submenu.title}}</a>
+      <!--<app-collapse [isSub]="true" [collapse-title]="submenu.title" *ngIf="submenu.isDrop" [collapseOn]="submenu.main.test(currentUrl)" (collapseOnChange)="submenu.collapseOn = $event;">-->
+      <app-collapse [isSub]="true" [collapse-title]="submenu.title" *ngIf="submenu.isDrop" [collapseOn]="submenu.collapseOn" (collapseOnChange)="collapseOnChange($event, submenu)">
+        <ng-container *ngFor="let sub of submenu.submenu">
+          <a class="sub-link nav-link-sub" *ngIf="sub.innerSkip" [routerLink]="sub.href" routerLinkActive="active">{{sub.title}}</a>
+          <a class="sub-link nav-link-sub" *ngIf="!sub.innerSkip" [href]="sub.href">{{sub.title}}</a>
+        </ng-container>
+      </app-collapse>
+    </li>
+  </ol>
+</div>

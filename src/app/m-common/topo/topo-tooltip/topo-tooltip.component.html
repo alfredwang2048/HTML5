@@ -1,0 +1,19 @@
+<div class="tooltip-wrapper" *ngIf="show" [ngStyle]="{'top.px': top, 'left.px': left}" #wrapper>
+  <div class="tooltip-header">带宽峰值：{{model.bandwidthOfferingUuid}}<span *ngIf="!move" class="move-label iconfont icon-ding" (click)="moveClickHandler()"></span><span *ngIf="move" class="close-label iconfont icon-sm-close" (click)="closeClickHandler()"></span></div>
+  <div class="tooltip-content">
+   <table>
+     <tbody>
+      <tr>
+        <td>带宽</td>
+        <td>丢包率(%)</td>
+        <td>延时(ms)</td>
+      </tr>
+      <tr>
+        <td>{{popInfo?.bandwidthString}}</td>
+        <td>{{popInfo?.loss}}</td>
+        <td>{{popInfo?.rtt}}</td>
+      </tr>
+     </tbody>
+   </table>
+  </div>
+</div>

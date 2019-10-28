@@ -1,0 +1,127 @@
+<app-right-modal [title]="modelOption.title" [(toggle)]="modelOption.toggle" [width]="width">
+  <ul class="list right-detail" *ngIf="selectedHa&&selectedHa.length!==0">
+    <li class="item">
+      <div class="col-md-6">
+        <ul>
+          <li><span class="name">HA组名称:</span><span class="model">{{selectedHa.name}}</span></li>
+          <li><span class="name">VIP:</span><span class="model">{{selectedHa.vip}}</span></li>
+          <p>
+            <span class="name">创建时间：</span>
+            <span class="model">{{selectedHa.createDate | date: 'yyyy-MM-dd HH:mm:ss'}}</span>
+          </p>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <ul>
+          <li><span class="name">UUID:</span><span class="model">{{selectedHa.uuid}}</span></li>
+          <li><span class="name">VRID:</span><span class="model">{{selectedHa.vrid}}</span></li>
+        </ul>
+      </div>
+    </li>
+
+    <li class="item">
+      <div class="col-md-6">
+        <h3>设备一</h3>
+        <ul class="col-md-6-ul">
+          <li><span class="name">CPE名称:</span><span class="model">{{ceNameA}}</span>
+          </li>
+          <li><span class="name">ESN号:</span><span class="model">{{esnA}}</span>
+          </li>
+          <li><span class="name">优先级:</span><span class="model">{{priorityA}}</span>
+          </li>
+          <li><span class="name">端口:</span><span class="model">{{cePortNameA}}</span></li>
+          <li *ngIf="localIpA"><span class="name">IP:</span><span class="model">{{localIpA}}</span></li>
+          <li *ngIf="ipCidrA"><span class="name">IP:</span><span class="model">{{ipCidrA}}</span></li>
+          <li>
+            <span class="name">角色:</span>
+            <span class="model">{{haRoleA}}
+              <span [appToolTip]="'刷新'" style="margin-left: 5px;">
+                <i *ngIf="!refreshLoadingA" class="iconfont icon-refresh cursor-pointer" (click)="refreshRole('roleA')"></i>
+                <i *ngIf="refreshLoadingA" class="iconfont icon-loading"></i>
+              </span>
+            </span>
+          </li>
+          <li>
+            <span class="name">状态:</span>
+            <span *ngIf="selectedHa.haGroupCeRefs[0]?selectedHa.haGroupCeRefs[0].ce.frpStatus=='online':false"
+                  class="btn-sm btn-success">已连接</span>
+            <span *ngIf="selectedHa.haGroupCeRefs[0]?selectedHa.haGroupCeRefs[0].ce.frpStatus=='offline':false"
+                  class="btn-sm btn-error">未连接</span>
+          </li>
+          <li>
+            <span class="name">主链路状态:</span>
+            <span class="btn-sm btn-success"
+                  *ngIf="selectedHa.haGroupCeRefs[0]?(selectedHa.haGroupCeRefs[0].ce.masterState !== 'Connecting' && selectedHa.haGroupCeRefs[0].ce.masterState !=='Disconnected'):false">
+              <span *ngIf="selectedHa.haGroupCeRefs[0]?selectedHa.haGroupCeRefs[0].ce.masterRtt:false">{{selectedHa.haGroupCeRefs[0]?selectedHa.haGroupCeRefs[0].ce.masterRtt:''}}</span>
+              <span *ngIf="selectedHa.haGroupCeRefs[0]?!selectedHa.haGroupCeRefs[0].ce.masterRtt:false">正常</span>
+            </span>
+            <span class="btn-sm btn-warning"
+                  *ngIf="selectedHa.haGroupCeRefs[0]?selectedHa.haGroupCeRefs[0].ce.masterState === 'Connecting':false">连接中</span>
+            <span class="btn-sm btn-error"
+                  *ngIf="selectedHa.haGroupCeRefs[0]?selectedHa.haGroupCeRefs[0].ce.masterState === 'Disconnected':false">异常</span>
+          </li>
+          <li><span class="name">切换时间:</span><span class="model">{{lastModifiedTimeA | date: 'yyyy-MM-dd HH:mm:ss'}}</span></li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h3>设备二</h3>
+        <ul class="col-md-6-ul">
+          <li><span class="name">CPE名称:</span><span class="model">{{ceNameB}}</span>
+          </li>
+          <li><span class="name">ESN号:</span><span class="model">{{esnB}}</span>
+          </li>
+          <li><span class="name">优先级:</span><span class="model">{{priorityB}}</span>
+          </li>
+          <li><span class="name">端口:</span><span class="model">{{cePortNameB}}</span></li>
+          <li *ngIf="localIpB"><span class="name">IP:</span><span class="model">{{localIpB}}</span></li>
+          <li *ngIf="ipCidrB"><span class="name">IP:</span><span class="model">{{ipCidrB}}</span></li>
+          <li>
+            <span class="name">角色:</span>
+            <span class="model">{{haRoleB}}
+              <span [appToolTip]="'刷新'" *ngIf="haRoleB" style="margin-left: 5px;">
+                <i *ngIf="!refreshLoadingB" class="iconfont icon-refresh cursor-pointer" (click)="refreshRole('roleB')"></i>
+                <i *ngIf="refreshLoadingB" class="iconfont icon-loading"></i>
+              </span>
+            </span>
+          </li>
+          <li>
+            <span class="name">状态:</span>
+            <span *ngIf="selectedHa.haGroupCeRefs[1]?selectedHa.haGroupCeRefs[1].ce.frpStatus=='online':false"
+                  class="btn-sm btn-success">已连接</span>
+            <span *ngIf="selectedHa.haGroupCeRefs[1]?selectedHa.haGroupCeRefs[1].ce.frpStatus=='offline':false"
+                  class="btn-sm btn-error">未连接</span>
+          </li>
+          <li>
+            <span class="name">主链路状态:</span>
+            <span class="btn-sm btn-success"
+                  *ngIf="selectedHa.haGroupCeRefs[1]?(selectedHa.haGroupCeRefs[1].ce.masterState !== 'Connecting' && selectedHa.haGroupCeRefs[1].ce.masterState !=='Disconnected'):false">
+              <span *ngIf="selectedHa.haGroupCeRefs[1]?selectedHa.haGroupCeRefs[1].ce.masterRtt:false">{{selectedHa.haGroupCeRefs[1]?selectedHa.haGroupCeRefs[1].ce.masterRtt:''}}</span>
+              <span *ngIf="selectedHa.haGroupCeRefs[1]?!selectedHa.haGroupCeRefs[1].ce.masterRtt:false">正常</span>
+            </span>
+            <span class="btn-sm btn-warning"
+                  *ngIf="selectedHa.haGroupCeRefs[1]?selectedHa.haGroupCeRefs[1].ce.masterState === 'Connecting':false">连接中</span>
+            <span class="btn-sm btn-error"
+                  *ngIf="selectedHa.haGroupCeRefs[1]?selectedHa.haGroupCeRefs[1].ce.masterState === 'Disconnected':false">异常</span>
+          </li>
+          <li><span class="name">切换时间:</span><span class="model">{{lastModifiedTimeB | date: 'yyyy-MM-dd HH:mm:ss'}}</span></li>
+        </ul>
+      </div>
+    </li>
+
+    <li class="item">
+      <h3>业务网段(本地私网网段) <i class="iconfont icon-cog" *ngIf="selectedHa.showSetCidr" (click)="openCidrList()" [appToolTip]="'配置业务网段'" [position]="'right'"></i></h3>
+      <p *ngFor="let item of serviceCidrs.datas;index as i">
+        <span *ngIf="i < 10">{{item.cidr}}</span>
+      </p>
+      <p *ngIf="serviceCidrs.total > 10">
+        <a class="more" [appToolTip]="'配置业务网段'" [position]="'right'" (click)="openCidrList()">更多</a>
+      </p>
+    </li>
+
+  </ul>
+</app-right-modal>
+
+<app-ha-batch-cidr-list #cidrList [resourceQuotaNumber]="resourceQuota?.serviceCidrNum" [selectedHa]="selectedHa" (done)="batchCidrDone($event)"></app-ha-batch-cidr-list>
+<app-common-window #deleteServiceCidr [title]="deleteServiceCidrCommonOption.title" [message]="deleteServiceCidrCommonOption.message" (done)="deleteServiceCidrDone()"></app-common-window>
+<app-loading-window #loading></app-loading-window>
+

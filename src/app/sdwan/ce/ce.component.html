@@ -1,0 +1,163 @@
+<div [ngStyle]="{height:'0'}">
+  <app-common-window #delete [title]="deleteCommonOption.title" [message]="deleteCommonOption.message" (done)="deleteDone()"></app-common-window>
+  <app-common-window #forceDelete [title]="forceDeleteCommonOption.title" [message]="forceDeleteCommonOption.message" (done)="forceDeleteDone()"></app-common-window>
+  <app-common-window #disable [title]="disableCommonOption.title" [message]="disableCommonOption.message" (cancelDone)="disableCancelDone()" (done)="disableDone()"></app-common-window>
+  <app-common-window #enable [title]="enableCommonOption.title" [message]="enableCommonOption.message" (cancelDone)="enableCancelDone()" (done)="enableDone()"></app-common-window>
+  <app-ce-detail #detail [ceInfos]="ceInfos" [selectedCe]="selectedCe" (done)="clickDone($event)"></app-ce-detail>
+  <app-common-window #init [title]="initVpeCommonOption.title" [message]="initVpeCommonOption.message" (done)="initDone()"></app-common-window>
+  <app-cpe-mointor [selectedItem]="selectedCe" #cpeMonitor></app-cpe-mointor>
+  <app-assign-vpe #assignVpe [assignType]="'cpe'" [selectedItem]="selectedCe" (done)="assingDone($event)"></app-assign-vpe>
+  <app-common-window #switchMaster [title]="switchMasterOption.title" [message]="switchMasterOption.message" (done)="switchMasterDone()"></app-common-window>
+  <app-common-window #changeSlave [title]="changeSlaveOption.title" [message]="changeSlaveOption.message" (done)="changeSlaveDone()"></app-common-window>
+  <app-cpe-monitor-manage #cpeMonitorManage [selectedCe]="selectedCe" (done)="cpeMonitorManageDone($event)"></app-cpe-monitor-manage>
+  <app-common-window #deleteMonitorTask [title]="deleteMonitorTaskCommonOption.title" [message]="deleteMonitorTaskCommonOption.message" (done)="deleteMonitorTaskDone()"></app-common-window>
+  <app-ce-task-monitor [selectedCe]="selectedCe" [selectedItem]="selectedCpeMonitorTask" #cpeMonitorTask></app-ce-task-monitor>
+  <app-ce-resource-quota [selectedCe]="selectedCe" #resourceQuota (done)="resourceQuotaDone($event)"></app-ce-resource-quota>
+  <app-common-window [title]="restartCeCommonOption.title" [message]="restartCeCommonOption.message" #restartCe (done)="restartCeDone()"></app-common-window>
+  <app-common-window [title]="restartCeAgentCommonOption.title" [message]="restartCeAgentCommonOption.message" #restartCeAgent (done)="restartCeAgentDone()"></app-common-window>
+  <app-ce-switch-sdwan-network #switchSdwanNetwork [selectedCe]="selectedCe" (done)="switchCpeSdwanNetworkDone($event)"></app-ce-switch-sdwan-network>
+  <app-common-window #resetCeSecretKey [title]="resetCeSecretKeyCommonOption.title" [message]="resetCeSecretKeyCommonOption.message" (done)="resetCeSecretKeyDone()"></app-common-window>
+  <app-ce-change-pop-type #changePopType [selectedCe]="selectedCe" (done)="changePopTypeDone($event)"></app-ce-change-pop-type>
+  <app-common-window #resetClientPassword [title]="resetClientPasswordCommonOption.title" [message]="resetClientPasswordCommonOption.message" (done)="resetClientPasswordDone()"></app-common-window>
+  <app-loading-window #loading></app-loading-window>
+</div>
+<div class="title">CPE管理<app-help-doc #helpDoc [title]="helpDocOption.title" [docContent]="helpDocOption.docContent" [docHrefContent]="helpDocOption.docHrefContent"></app-help-doc></div>
+<div class="content-menu">
+  <app-ce-create (done)="createCeDone($event)"></app-ce-create>
+  <app-ce-search (done)="searchDone($event)" [searchInitObj]="searchInitObj" [searchInitObj2]="searchInitObj2"></app-ce-search>
+</div>
+<div class="grid-wrapper">
+  <app-grid class="s-grid" [currentRowIndex]="currentRowIndex" [data]="ces" (selection-change)="showDetail($event)" [loading]="gridLoading">
+    <app-grid-column field="number" header="序号"></app-grid-column>
+    <app-grid-column field="esn" header="ESN号"></app-grid-column>
+    <app-grid-column field="name" header="CPE名称">
+      <ng-template #slot let-dataItem>
+        <span class="iconfont"
+                [ngStyle]="{color: '#00c1e0',fontSize: 20}"
+                [ngClass]="{'icon-jhj': dataItem.os === 'vyos','icon-mobile': dataItem.os === 'openwrt','icon-APP2': dataItem.os === 'app'}">
+        </span>
+        <span>{{dataItem.name}}</span>
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column field="connectionType" header="连接类型">
+      <ng-template #slot let-dataItem>
+        <span>{{dataItem.connectionType=='TUNNEL'?'专线':'SD-WAN'}}</span>
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column field="sdwanNetworkName" header="所属网络">
+      <ng-template #slot let-dataItem>
+        <a class="aLinkStyle" (click)="getCpeBySdwanNetwork($event,dataItem)">{{dataItem.sdwanNetworkName}}</a>
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column field="accountName" header="账户名"></app-grid-column>
+    <app-grid-column field="company" header="公司"></app-grid-column>
+    <app-grid-column field="" width="110px" header="主链路">
+      <ng-template #slot let-dataItem>
+        <p>
+          <span class="btn-sm btn-success" *ngIf="dataItem.masterState == 'Connected'">
+            <span>{{dataItem.masterRtt || '正常'}}</span>
+          </span>
+          <span class="btn-sm btn-warning" *ngIf="dataItem.masterState === 'Connecting'">连接中</span>
+          <span *ngIf="dataItem.masterState === 'Disconnected'">
+            <span *ngIf="dataItem.os === 'vyos' || dataItem.slaveState==='Disconnected'">
+              <span class="btn-sm btn-error">异常</span>
+            </span>
+            <span *ngIf="dataItem.os !== 'vyos' && dataItem.slaveState==='Connected'">
+              <span class="btn-sm btn-gray">备线</span>
+            </span>
+          </span>
+          {{dataItem.masterLineName}}
+        </p>
+        <p>{{dataItem.masterVpeName || dataItem.masterEndpointName}}</p>
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column width="110px" field="" header="备链路">
+      <ng-template #slot let-dataItem>
+        <p>
+          <span class="btn-sm btn-success" *ngIf="dataItem.slaveState == 'Connected'">
+            <span>{{dataItem.slaveRtt || '正常'}}</span>
+          </span>
+          <span class="btn-sm btn-warning" *ngIf="dataItem.slaveState === 'Connecting'">连接中</span>
+          <span *ngIf="dataItem.slaveState === 'Disconnected'">
+            <span *ngIf="dataItem.os === 'vyos' || dataItem.masterState==='Disconnected'">
+              <span class="btn-sm btn-error">异常</span>
+            </span>
+            <span *ngIf="dataItem.os !== 'vyos' && dataItem.masterState==='Connected'">
+              <span class="btn-sm btn-gray">备线</span>
+            </span>
+          </span>
+          {{dataItem.slaveLineName}}
+        </p>
+        <p>{{dataItem.slaveVpeName || dataItem.slaveEndpointName}}</p>
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column field="lasterTime" header="心跳"></app-grid-column>
+    <app-grid-column header="监控">
+      <ng-template #slot let-dataItem>
+        <span [appToolTip]="'查看监控'" *ngIf="dataItem.connectionType === 'SDWAN'" class="iconfont icon-chart vpe-monitor" (click)="openMonitor($event, dataItem)"></span>
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column width="50px" field="bandwidthOfferingUuid" header="带宽"></app-grid-column>
+    <app-grid-column field="status" header="状态">
+      <ng-template #slot let-dataItem>
+        <span *ngIf="dataItem.status=='online'" class="btn-sm btn-success">已连接</span>
+        <span *ngIf="dataItem.status=='offline'" class="btn-sm btn-error">未连接</span>
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column field="state" header="状况">
+      <ng-template #slot let-dataItem>
+        <span *ngIf="dataItem.state=='Enabled'" class="btn-sm btn-success">已启用</span>
+        <span *ngIf="dataItem.state=='Disabled'" class="btn-sm btn-error">已禁用</span>
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column field="createDate" header="创建时间">
+      <ng-template #slot let-dataItem>
+        {{dataItem.createDate | date: 'yyyy-MM-dd HH:mm:ss'}}
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column header="操作" width="80px">
+      <ng-template #slot let-dataItem let-rowIndex="rowIndex">
+        <app-w-dropdown (click)="selectedRow(dataItem, rowIndex)">
+          <ng-container drop-type="toggle">更多</ng-container>
+          <ul drop-type="menu" class="grid-drop-menu">
+            <!--
+              <li *ngIf="isActionShow(dataItem, 'init')" (click)="initVpe(dataItem, rowIndex)">初始化CE</li>
+              <li *ngIf="isActionShow(dataItem, 'disable')" (click)="disableCe(dataItem, rowIndex)">禁用</li>
+              <li *ngIf="isActionShow(dataItem, 'enable')" (click)="enableCe(dataItem, rowIndex)">启用</li>
+              <li *ngIf="isActionShow(dataItem, 'delete')" (click)="openDeleteWin(dataItem, rowIndex)">删除</li>
+              <li *ngIf="isActionShow(dataItem, 'assignVpn')" (click)="assignVpe.open()">指定VPE</li>
+              <li *ngIf="isActionShow(dataItem, 'switchMaster')" (click)="openSwitchMasterWin(dataItem, rowIndex)">切换主备链路</li>
+              <li *ngIf="isActionShow(dataItem, 'switchMaster')" (click)="openChangeSlaveWin(dataItem, rowIndex)">变更备链路</li>
+              <li *ngIf="isActionShow(dataItem, 'CPEMonitorManage')" (click)="cpeMonitorManage.openDialog()">CPE监控</li>
+              <li *ngIf="isActionShow(dataItem, 'restart')" (click)="resourceQuota.openDialog()">配额设置</li>
+              <li *ngIf="isActionShow(dataItem, 'restart')" (click)="restartCeEvent(dataItem, rowIndex)">系统重启</li>
+              <li *ngIf="isActionShow(dataItem, 'restartAgent')" (click)="restartCeAgentEvent(dataItem, rowIndex)">Agent重启</li>
+              <li *ngIf="isActionShow(dataItem, 'switchSdwanNetwork')" (click)="switchSdwanNetwork.openDialog()">变更SD-WAN网络</li>
+              <li *ngIf="isActionShow(dataItem, 'resetCeSecretKey')" (click)="openResetCeKyWin(dataItem, rowIndex)">重置安全密钥</li>
+            -->
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'init')" (click)="initVpe(dataItem, rowIndex)">初始化CE</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'disable')" (click)="disableCe(dataItem, rowIndex)">禁用</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'enable')" (click)="enableCe(dataItem, rowIndex)">启用</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'delete')" (click)="openDeleteWin(dataItem, rowIndex)">删除</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'assignVpn')" (click)="assignVpe.open()">指定VPE</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'switchMaster')" (click)="openSwitchMasterWin(dataItem, rowIndex)">切换主备链路</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'switchMaster')" (click)="openChangeSlaveWin(dataItem, rowIndex)">变更备链路</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'CPEMonitorManage')" (click)="cpeMonitorManage.openDialog()">CPE监控</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'restart')" (click)="resourceQuota.openDialog()">配额设置</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'restart')" (click)="restartCeEvent(dataItem, rowIndex)">系统重启</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'restartAgent')" (click)="restartCeAgentEvent(dataItem, rowIndex)">Agent重启</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'switchSdwanNetwork')" (click)="switchSdwanNetwork.openDialog()">变更SD-WAN网络</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'resetCeSecretKey')" (click)="openResetCeKyWin(dataItem, rowIndex)">重置安全密钥</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'changePopType')" (click)="changePopType.openDialog()">变更链路类型</button></li>
+            <li ><button type="button" [disabled]="!isActionShow(dataItem, 'resetClientPassword')" (click)="openResetClientPasswordWin(dataItem, rowIndex)">重置客户端密码</button></li>
+
+          </ul>
+        </app-w-dropdown>
+      </ng-template>
+    </app-grid-column>
+  </app-grid>
+  <div class="tips" *ngIf="pagination.show"><span class="iconfont icon-jinggao-"></span>注：点击上方列表空白处可查看该CPE详情。</div>
+  <app-pagination *ngIf="pagination.show" [(pageSize)]="pagination.size" (pageSizeChange)="pageChange($event, true)"
+                  [dataTotal]="pagination.total" [(currentPage)]="pagination.current"
+                  (currentPageChange)="pageChange($event, false)" [layout]="pagination.layout"></app-pagination>
+</div>

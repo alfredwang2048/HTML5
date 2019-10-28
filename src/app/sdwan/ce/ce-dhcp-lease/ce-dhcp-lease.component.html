@@ -1,0 +1,18 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight">
+    <div class="dialog-body-wrapper">
+      <app-grid class="s-grid" [data]="dhcpInfo" [loading]="gridLoading">
+        <app-grid-column field="hostname" header="主机名"></app-grid-column>
+        <app-grid-column field="ip" header="ip"></app-grid-column>
+        <app-grid-column field="hardware_address" header="mac"></app-grid-column>
+        <app-grid-column field="expires" header="到期时间"></app-grid-column>
+      </app-grid>
+      <app-pagination *ngIf="pagination.show" [(pageSize)]="pagination.size" (pageSizeChange)="pageChange($event, true)" [dataTotal]="pagination.total" [(currentPage)]="pagination.current" (currentPageChange)="pageChange($event, false)" [layout]="pagination.layout"></app-pagination>
+    </div>
+    <div class="btn-footer">
+      <button [ngStyle]="{'margin-right': '0'}" class="btn-default" (click)="cancel()">关闭</button>
+    </div>
+  </app-w-dialog>
+</div>
+

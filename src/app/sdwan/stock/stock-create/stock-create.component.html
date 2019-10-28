@@ -1,0 +1,38 @@
+<div class="create-wrapper">
+  <button class="btn-primary" (click)="openDialog()"><i class="iconfont icon-plus"></i>新建CPE</button>
+
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight">
+    <form class="form-container" [formGroup]="createStockForm">
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">CPE型号<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <select class="form-control" formControlName="model">
+            <option *ngFor="let item of models" [value]="item.model">{{item.model}}</option>
+          </select>
+        </div>
+        <div class="form-error" *ngIf="model.invalid && (model.dirty || model.touched)">
+          <p class="error" *ngIf="model.errors['required']">CPE型号必填</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">ESN号<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <input class="form-control" formControlName="esn" placeholder="请输入ESN号">
+        </div>
+        <div class="form-error" *ngIf="esn.invalid && (esn.dirty || esn.touched)">
+          <p class="error" *ngIf="esn.errors['required']">ESN号必填</p>
+        </div>
+      </div>
+    </form>
+    <div class="btn-footer">
+      <button class="btn-default" type="button" (click)="cancel()">取消</button>
+      <button class="btn-primary" type="button" (click)="confirm()" [disabled]="createStockForm.invalid">确定</button>
+    </div>
+  </app-w-dialog>
+</div>

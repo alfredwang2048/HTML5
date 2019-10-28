@@ -1,0 +1,82 @@
+<div class="container">
+  <app-w-dialog [title]="dialogOptions.title" [width]="dialogOptions.width" [(visible)]="dialogOptions.visible" [changeHeight]="dialogOptions.changeHeight">
+    <div class="top">
+      <app-nav-tabs [lists]="navTabLists" [(ngModel)]="currentTab"></app-nav-tabs>
+      <form class="form" [formGroup]="addTaskForm">
+        <div class="detail clearfix">
+          <div class="item">
+            <span class="form-label">测试出接口<span class="red">*</span>:</span>
+            <select class="form-control" formControlName="dev">
+              <option *ngFor="let item of devs" [value]="item.dev">{{item.dev}}({{item.description}})</option>
+            </select>
+          </div>
+          <div class="item">
+            <span class="form-label">测试IP<span class="red">*</span>:</span>
+            <input class="form-control" formControlName="targetIp" placeholder="请输入测试IP"/>
+          </div>
+          <div class="item" [style.width]="'130px'">
+            <span class="form-label">类型<span class="red">*</span>:</span>
+            <select class="form-control" formControlName="type" [style.width]="'80px'">
+              <option *ngFor="let item of types" [value]="item.value">{{item.text}}</option>
+            </select>
+          </div>
+          <button class="btn-primary" [disabled]="addTaskForm.invalid || isClick" type="button" (click)="confirm()">{{currentTab.value === 'multi' ? '添加' : '开始测试'}}</button>
+          <i class="iconfont icon-loading" *ngIf="isClick"></i>
+        </div>
+        <div class="tips clearfix" *ngIf="(dev.invalid && (dev.dirty || dev.touched)) || (targetIp.invalid && (targetIp.dirty || targetIp.touched))">
+          <div class="item">
+            <div class="form-error" *ngIf="dev.invalid && (dev.dirty || dev.touched)">
+              <p class="error" *ngIf="dev.errors['required']">测试出接口不能为空</p>
+            </div>
+          </div>
+          <div class="item">
+            <div class="form-error" *ngIf="targetIp.invalid && (targetIp.dirty || targetIp.touched)">
+              <p class="error" *ngIf="targetIp.errors['required']">测试IP不能为空</p>
+              <p class="error" *ngIf="targetIp.errors['pattern']">格式错误</p>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="dialog-body-wrapper">
+      <div *ngIf="currentTab.value === 'multi'">
+        <app-grid class="s-grid" [data]="datas" [loading]="gridLoading">
+          <app-grid-column field="dev" header="CPE（出接口）"></app-grid-column>
+          <app-grid-column field="targetIp" header="测试IP"></app-grid-column>
+          <app-grid-column field="type" header="类型">
+            <ng-template #slot let-dataItem>
+              <span>{{dataItem.type === 'dev' ? '接口' : '源IP'}}</span>
+            </ng-template>
+          </app-grid-column>
+          <app-grid-column field="targetIp" header="监控">
+            <ng-template #slot let-dataItem>
+              <span class="iconfont icon-chart cpe-monitor" (click)="openMonitor($event, dataItem)"></span>
+            </ng-template>
+          </app-grid-column>
+          <app-grid-column field="createDate" header="创建时间">
+            <ng-template #slot let-dataItem>
+              {{dataItem.createDate | date: 'yyyy-MM-dd HH:mm:ss'}}
+            </ng-template>
+          </app-grid-column>
+          <app-grid-column header="操作" width="80px">
+            <ng-template #slot let-dataItem let-rowIndex="rowIndex">
+              <span class="cursor-pointer" (click)="deleteTask(dataItem)">删除</span>
+            </ng-template>
+          </app-grid-column>
+        </app-grid>
+        <app-pagination *ngIf="pagination.show" [(pageSize)]="pagination.size" (pageSizeChange)="pageChange($event, true)" [dataTotal]="pagination.total" [(currentPage)]="pagination.current" (currentPageChange)="pageChange($event, false)" [layout]="pagination.layout"></app-pagination>
+      </div>
+      <div *ngIf="currentTab.value === 'single'">
+        <div class="result">
+          <div class="scroll">
+            <p [style.color]="'#333'">测试结果：</p>
+            <p *ngFor="let item of pingResults">{{item}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dialog-btn-wrapper">
+      <button type="button" class="btn-default" (click)="close()">关闭</button>
+    </div>
+  </app-w-dialog>
+</div>

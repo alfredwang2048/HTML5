@@ -1,0 +1,6 @@
+<div class="height-0">
+  <app-ce-detail #detail [ceInfos]="selectedPopInfos"></app-ce-detail>
+</div>
+<div class="title"><a class="back" routerLink="/sdwan/network"><i class="iconfont icon-arrow_left"></i>返回</a>网络拓扑 ({{networkName}})</div>
+<button class="btn-primary" (click)="updateTopo()" [disabled]="disabled">更新拓扑</button>
+<app-topo [model]="topoModel" (nodeClick)="topoClick($event)"></app-topo>

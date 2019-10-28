@@ -1,0 +1,61 @@
+<div class="create-wrapper">
+  <button class="btn-primary" (click)="openDialog()"><i class="iconfont icon-plus"></i>新增应用定义</button>
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight">
+    <form class="form-container" [formGroup]="ailDetailAddForm">
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">应用名称<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <span class="form-label">{{selectedItem?.name}}</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">目的地址:</span>
+        </div>
+        <div class="form-model">
+          <input class="form-control" formControlName="destIp"  placeholder="请输入目的地址">
+        </div>
+        <!--<div class="form-error" *ngIf="destIp.invalid && (destIp.dirty || destIp.touched)">
+          <p class="error">目的地址必填</p>
+        </div>-->
+      </div>
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">目标端口:</span>
+        </div>
+        <div class="form-model">
+          <input class="form-control" formControlName="destPort"  placeholder="请输入目标端口">
+        </div>
+        <div class="form-error" *ngIf="destPort.invalid && (destPort.dirty || destPort.touched)">
+          <!--<p *ngIf="destPort.errors['required']" class="error">目标端口必填</p>-->
+          <p *ngIf="destPort.errors['pattern']" class="error">目标端口格式错误</p>
+        </div>
+        <div class="form-error">
+          <p class="error" *ngIf="isShowTips">
+            <span>目的地址或目标端口至少填一项</span>
+          </p>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">协议<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <select class="form-control" formControlName="protocol">
+            <option *ngFor="let item of protocols" [value]="item.value">{{item.text}}</option>
+          </select>
+        </div>
+        <div class="form-error" *ngIf="protocol.invalid && (protocol.dirty || protocol.touched)">
+          <p class="error">协议必填</p>
+        </div>
+      </div>
+    </form>
+    <div class="btn-footer">
+      <button class="btn-default" (click)="cancel()">取消</button>
+      <button class="btn-primary" (click)="confirm()" [disabled]="ailDetailAddForm.invalid || isShowTips || isTouched">确定</button>
+    </div>
+  </app-w-dialog>
+</div>

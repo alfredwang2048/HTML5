@@ -1,0 +1,5 @@
+<div class="topo" #topoWrapper (drop)="$event.preventDefault();" (dragover)="$event.preventDefault();">
+  <app-topo-node *ngFor="let node of model.nodes" [model]="node" [maxHeight]="maxHeight" [maxWidth]="maxWidth" (modelChange)="nodeMove($event)" (clickHandler)="nodeClickHandler($event)"></app-topo-node>
+  <app-topo-line *ngFor="let line of model.links" [model]="line"></app-topo-line>
+  <app-topo-container *ngFor="let con of model.containers" [model]="con" (moveHandler)="containerMove($event)" (upHandler)="containerUp($event)" [maxWidth]="maxWidth" [maxHeight]="maxHeight"></app-topo-container>
+</div>

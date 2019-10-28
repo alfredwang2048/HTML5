@@ -1,0 +1,17 @@
+<div class="wrapper">
+  <app-mfa></app-mfa>
+  <div class="nav">
+    <app-header></app-header>
+  </div>
+  <div class="main">
+    <div class="sidebar" [ngStyle] = "{width: sidebarWidth,background: '#333'}">
+      <app-sidebar [toggleType]="toggleType" [model]="sidebarModel" [selectedIndex]="selectedIndex" (toggleMenu)="toggleMenu($event)"></app-sidebar>
+    </div>
+    <div class="subbar"  [ngStyle] = "{width: subbarWidth}">
+      <app-sub-sidebar [model]="subbarModel" [currentUrl]="currentUrl"></app-sub-sidebar>
+    </div>
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

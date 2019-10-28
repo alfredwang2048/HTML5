@@ -1,0 +1,11 @@
+<div class="relate-wrapper">
+  <select class="relate-name relate-select" (change)="nameChangeHandler($event.target.value)">
+    <option *ngFor="let item of model" [value]="item.name" [selected]="item.name === relateName">{{item.value}}</option>
+  </select>
+  <div class="relate-value">
+    <input class="relate-input" *ngIf="!hasRelate" [value]="relateValue"  (blur)="valueChangeHandler($event.target.value)" #inputVal (keyup.enter)="onKeyUp($event, inputVal.value)">
+    <select class="relate-select" *ngIf="hasRelate" (change)="valueChangeHandler($event.target.value)">
+      <option  *ngFor="let item of relateList" [value]="item.name" [selected]="item.name === relateValue">{{item.value}}</option>
+    </select>
+  </div>
+</div>

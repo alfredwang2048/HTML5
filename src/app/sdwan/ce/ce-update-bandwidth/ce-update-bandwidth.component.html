@@ -1,0 +1,21 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight">
+    <form class="form-container">
+      <div class="tips">
+        <span>每月只允许调整带宽{{modifyNum?.maxModifies}}次，本月已用{{modifyNum?.hasModifies}}次，剩余{{modifyNum?.leftModifies}}次</span>
+      </div>
+      <div class="form-group clearfix">
+        <app-bandwidth [allBandwidth]="allBandwidth" [currentBandwidth]="currentBandwidth" [inputWidth]="'100px'" (done)="selectBandwidthDone($event)"></app-bandwidth>
+      </div>
+      <div class="form-error">
+        <p class="error" *ngIf="isTipsShow">本月修改次数已用完</p>
+      </div>
+    </form>
+    <div class="btn-footer">
+      <button class="btn-default" (click)="cancel()">取消</button>
+      <button class="btn-primary" (click)="confirm()">确定</button>
+    </div>
+  </app-w-dialog>
+</div>
+

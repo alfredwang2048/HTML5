@@ -1,0 +1,97 @@
+:host
+  display: inline-block
+  z-index 100
+.form-container
+  padding: 15px 15px 0
+  .form-group
+    &::after
+      display: table-cell
+      content: ''
+      clear: both
+    .form-label
+      width: 120px
+      margin-left 25px
+    .form-control
+      width: 248px
+    .form-error
+      margin-left: 145px
+    .cascader-host
+      width: 248px
+  .btn-container
+    background: #e1eef0
+.raidBox .raidLists
+  display: inline-block
+  width: 250px
+  span
+    display: inline-block
+    height: 30px
+    line-height: 30px
+    padding: 0 8px
+    margin-right: 10px
+    color: #6e7880
+    background: #c7cfd140
+    border: 1px solid transparent
+    cursor: pointer
+    -webkit-transition: all .3s ease-in-out
+    -moz-transition: all .3s ease-in-out
+    -ms-transition: all .3s ease-in-out
+    -o-transition: all .3s ease-in-out
+    transition: all .3s ease-in-out
+    &.selected, &:hover
+      color: #00c1e0
+      background: #bcedf561
+      border-color: #00c1e0
+.form-control-text
+  display: inline-block;
+  line-height: 30px;
+.button
+  width 100px
+  height 30px
+  margin-right 20px
+  font-size 12px
+  color e5e5e5
+  border 1px solid #ddd
+  background #fff
+  cursor pointer
+.active
+  border: none;
+  color: #fff;
+  background: #00c1e0;
+.vpeList
+  overflow hidden
+  margin-bottom: 0px;
+  .vpe-list-left
+    float left
+  .vpe-list-right
+    float left
+    padding-top 5px
+    line-height 20px
+    overflow hidden
+    span
+      display block
+.tips
+  text-indent 22px
+.vpe-list
+  padding 10px 20px
+  margin-bottom 0px
+  label
+    display inline-block
+    margin-bottom 5px
+  ul li
+    padding-bottom 10px
+    overflow hidden
+    div
+      display inline-block
+      width 33.3%
+      float left
+      input
+        display inline-block
+        float left
+      span
+        display inline-block
+        float left
+        width 100px
+        word-break break-all
+.lable-disabled
+  color #999
+  cursor not-allowed

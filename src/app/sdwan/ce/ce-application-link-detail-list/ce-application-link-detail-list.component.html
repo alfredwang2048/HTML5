@@ -1,0 +1,29 @@
+<div class="container">
+  <app-w-dialog [title]="dialogOptions.title" [width]="dialogOptions.width" [(visible)]="dialogOptions.visible" [changeHeight]="dialogOptions.changeHeight">
+    <div class="content-menu">
+      <app-ce-application-link-detail-add [selectedItem]="selecedItem" [isModel]="isModel" (done)="addDone($event)"></app-ce-application-link-detail-add>
+      <button class="btn-primary" [disabled]="!selectedItems.length" (click)="deleteApplication()">删除</button>
+    </div>
+    <div class="dialog-body-wrapper">
+      <app-grid class="s-grid" [data]="applicationLists" [loading]="gridLoading">
+        <app-grid-column field="name" width="80px">
+          <ng-template #header>
+            <input (change)="selectAll(input_box)" type="checkbox" name="" [(ngModel)]="input_box">全选
+          </ng-template>
+          <ng-template #slot let-dataItem>
+            <span>
+              <input (change)="clickId()" [(ngModel)]="dataItem.status" [(checked)]="input_box" type="checkbox"/>
+            </span>
+          </ng-template>
+        </app-grid-column>
+        <app-grid-column field="destIp" header="目的地址"></app-grid-column>
+        <app-grid-column field="destPort" header="目标端口"></app-grid-column>
+        <app-grid-column field="protocol" header="协议"></app-grid-column>
+      </app-grid>
+      <app-pagination *ngIf="pagination.show" [(pageSize)]="pagination.size" (pageSizeChange)="pageChange($event, true)" [dataTotal]="pagination.total" [(currentPage)]="pagination.current" (currentPageChange)="pageChange($event, false)" [layout]="pagination.layout"></app-pagination>
+    </div>
+    <div class="dialog-btn-wrapper">
+      <button type="button" class="btn-default" (click)="close()">关闭</button>
+    </div>
+  </app-w-dialog>
+</div>

@@ -1,0 +1,18 @@
+<app-right-modal [title]="modelOption.title" [width]="modelOption.width" [(toggle)]="modelOption.toggle">
+  <ul class="list right-detail">
+    <li><span class="name">UUID：</span><span class="text">{{selectedItem?.uuid}}</span></li>
+    <li><span class="name">VPE名称：</span><span class="text">{{selectedItem?.vpeName}}</span></li>
+    <li><span class="name">VPE IP：</span><span class="text">{{selectedItem?.vpeIp}}</span></li>
+    <li><span class="name">所属网络UUID：</span><span class="text">{{selectedItem?.sdwanNetworkUuid}}</span></li>
+    <li><span class="name">所属网络：</span><span class="text">{{selectedItem?.sdwanNetworkName}}</span></li>
+    <li><span class="name">PE IP：</span><span class="text">{{selectedItem?.peIp}}</span></li>
+    <li><span class="name">PE类型：</span><span class="text">{{selectedItem?.peType}}</span></li>
+    <li><span class="name">srcMonitorIp：</span><span class="text">{{selectedItem?.srcMonitorIp}}</span></li>
+    <li><span class="name">destMonitorIp：</span><span class="text">{{selectedItem?.destMonitorIp}}</span></li>
+    <li><span class="name">alarmStatus：</span><span class="text">{{selectedItem?.alarmStatus}}</span></li>
+    <li><span class="name">alarmCount：</span><span class="text">{{selectedItem?.alarmCount}}</span></li>
+    <li><span class="name">状态：</span><span class="text">{{selectedItem?.status}}</span></li>
+    <li><span class="name">最后更新：</span><span class="text">{{selectedItem?.lastOpDate|date:'yyyy-MM-dd HH:mm:ss'}}</span></li>
+    <li><span class="name">创建时间：</span><span class="text">{{selectedItem?.createDate|date:'yyyy-MM-dd HH:mm:ss'}}</span></li>
+  </ul>
+</app-right-modal>

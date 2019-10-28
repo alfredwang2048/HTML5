@@ -1,0 +1,73 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight">
+    <form class="form-container" [formGroup]="updateConnectionModeForm">
+      <div *ngIf="isCanUpdate">
+        <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">连接类型<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <select class="form-control" formControlName="connectionType" (change)="changeConnectionType()">
+            <option *ngFor="let item of connectionTypes" [value]="item.value">{{item.name}}</option>
+          </select>
+        </div>
+      </div>
+        <div class="form-group">
+          <div class="form-name">
+            <span class="form-label">模式<span class="red">*</span>:</span>
+          </div>
+          <div class="form-model">
+            <select class="form-control" formControlName="connectionMode" (change)="changeConnectionMode()">
+              <option *ngFor="let item of connectionModes" [value]="item">{{UtilsconnectionMode[item]}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" *ngIf="connectionType.value == 'SDWAN'">
+          <div class="form-name">
+            <span class="form-label">SD-WAN网络<span class="red">*</span>:</span>
+          </div>
+          <div class="form-model">
+            <select class="form-control" formControlName="sdwanNetworkUuid">
+              <option *ngFor="let sdwanNetwork of sdwanNetworks" [value]="sdwanNetwork.uuid">{{sdwanNetwork.name}}</option>
+            </select>
+          </div>
+          <div class="form-error" *ngIf="sdwanNetworkUuid.invalid && (sdwanNetworkUuid.dirty || sdwanNetworkUuid.touched)">
+            <p class="error" *ngIf="sdwanNetworkUuid.errors['required']">SD-WAN网络必填</p>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-name">
+            <span class="form-label">主备切换<span class="red">*</span>:</span>
+          </div>
+          <div class="form-model">
+            <app-btn-group [models]="masterSlaveSwitchs" formControlName="masterSlaveSwitch"></app-btn-group>
+          </div>
+        </div>
+        <div class="form-group" *ngIf="connectionType.value === 'SDWAN'">
+          <div class="form-name">
+            <span class="form-label">互通模式<span class="red">*</span>:</span>
+          </div>
+          <div class="form-model">
+            <app-btn-group [models]="l3Protocols" formControlName="l3Protocol"></app-btn-group>
+          </div>
+        </div>
+        <div class="form-group" *ngIf="connectionMode.value !== 'DOUBLE_TUNNEL'">
+          <app-bandwidth [allBandwidth]="allBandwidth" [currentBandwidth]="ceInfos?.ceInventory.bandwidthOfferingUuid" [inputWidth]="'100px'" (done)="selectBandwidthDone($event)"></app-bandwidth>
+          <div class="form-error" *ngIf="showbandwidthTips">
+            <p class="error">请选择带宽</p>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!isCanUpdate">
+        <div class="tips">
+          <span class="iconfont icon-jinggao-"></span>仅在禁用并且初始化后才能变更链路模式。
+        </div>
+      </div>
+    </form>
+    <div class="btn-footer">
+      <button class="btn-default" (click)="cancel()">取消</button>
+      <button class="btn-primary" [disabled]="!isCanUpdate || updateConnectionModeForm.invalid" (click)="confirm()">确定</button>
+    </div>
+  </app-w-dialog>
+</div>

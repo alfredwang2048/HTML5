@@ -1,0 +1,3 @@
+<div class="btn-group">
+  <button (click)="selectItem(item)" [ngClass]="{'active':model == item.value}" *ngFor="let item of models">{{item.name}}</button>
+</div>

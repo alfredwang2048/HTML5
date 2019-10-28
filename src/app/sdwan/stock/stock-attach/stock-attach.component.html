@@ -1,0 +1,148 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight" [height]="'730'">
+    <form class="form-container" [formGroup]="createCeForm">
+
+      <div class="form-group clearfix">
+        <div class="form-name">
+          <span class="form-label">CPE型号<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <span class="form-label">{{selectedStock?.model}}</span>
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="form-name">
+          <span class="form-label">ESN号<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <span class="form-label">{{selectedStock?.esn}}</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">账户名<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <app-search-account [inputWidth]="'240px'" class="account-ref-wrapper" formControlName="accountRef" (selectedAccountChange)="accountChange($event)"></app-search-account>
+        </div>
+        <div class="form-error" *ngIf="accountRef.invalid && (accountRef.dirty || accountRef.touched)">
+          <p class="error" *ngIf="accountRef.errors['required']">用户信息必填</p>
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="form-name">
+          <span class="form-label">名称<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <input class="form-control" formControlName="name" placeholder="请输入名称">
+        </div>
+        <div class="form-error" *ngIf="name.invalid && (name.dirty || name.touched)">
+          <p class="error" *ngIf="name.errors['required']">请输入名称</p>
+          <p class="error" *ngIf="name.errors['minlength']">长度至少6位</p>
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="form-name">
+          <span class="form-label">连接类型<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <select class="form-control" formControlName="connectionType" (change)="changeConnectionType()">
+            <option *ngFor="let connectionType of connectionTypes" [value]="connectionType.value">{{connectionType.name}}</option>
+          </select>
+        </div>
+        <div class="form-error" *ngIf="connectionType.invalid && (connectionType.dirty || connectionType.touched)">
+          <p class="error" *ngIf="connectionType.errors['required']">连接类型必填</p>
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="form-name">
+          <span class="form-label">初始模式<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <select class="form-control" formControlName="connectionMode" (change)="changeConnectionMode()">
+            <option *ngFor="let item of connectionModes" [value]="item">{{UtilsconnectionMode[item]}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group clearfix" *ngIf="connectionType.value == 'SDWAN'">
+        <div class="form-name">
+          <span class="form-label">SD-WAN网络<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <select class="form-control" formControlName="sdwanNetworkUuid">
+            <option value="">请选择</option>
+            <option *ngFor="let sdwanNetwork of sdwanNetworks" [value]="sdwanNetwork.uuid">{{sdwanNetwork.name}}</option>
+          </select>
+        </div>
+        <div class="form-error" *ngIf="sdwanNetworkUuid.invalid && (sdwanNetworkUuid.dirty || sdwanNetworkUuid.touched)">
+          <p class="error" *ngIf="sdwanNetworkUuid.errors['required']">SD-WAN网络必填</p>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="connectionType.value == 'SDWAN' && selectedStock.os === 'vyos'">
+        <div class="form-name"><span class="form-label">CPE预配置:</span></div>
+        <div class="form-model" [ngStyle]="{'line-height': '30px'}">
+          <input class="form-control" type="checkbox" formControlName="applyTemplate">启用该SD-WAN网络CPE预配置
+        </div>
+      </div>
+
+      <div class="form-group clearfix area-relation">
+        <div class="form-name">
+          <span class="form-label">国家或地区<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <select class="form-control" formControlName="country" (change)="changeArea()">
+            <option *ngFor="let country of countrys" [value]="country.en">{{country.zh}}</option>
+          </select>
+          <select class="form-control " formControlName="province" (change)="changeProvince()">
+            <option *ngFor="let province of provinces" [value]="province.zh">{{province.zh}}</option>
+          </select>
+          <select class="form-control " formControlName="city">
+            <option *ngFor="let city of citys" [value]="city.zh">{{city.zh}}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="form-name">
+          <span class="form-label">安装地址<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <textarea class="form-control" formControlName="address" placeholder="请输入安装地址"></textarea>
+        </div>
+        <div class="form-error" *ngIf="address.invalid && (address.dirty || address.touched)">
+          <p class="error" *ngIf="address.errors['required']">安装地址必填</p>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="connectionType.value === 'SDWAN' && selectedStock.os === 'vyos'">
+        <div class="form-name">
+          <span class="form-label">互通模式<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <app-btn-group [models]="l3Protocols" formControlName="l3Protocol"></app-btn-group>
+        </div>
+      </div>
+
+      <div class="form-group clearfix" *ngIf="connectionMode.value === 'TUNNEL_INTERNET' || connectionMode.value === 'DOUBLE_INTERNET'">
+        <app-bandwidth [allBandwidth]="allBandwidth" [currentBandwidth]="''" [inputWidth]="'100px'" [inputName]="'带宽峰值'" (done)="selectBandwidthDone($event)"></app-bandwidth>
+        <div class="form-error" *ngIf="bandwidthTips">
+          <p class="error">请选择带宽</p>
+        </div>
+      </div>
+
+    </form>
+    <div class="btn-footer">
+          <button class="btn-default" type="button" (click)="cancel()">取消</button>
+          <button class="btn-primary" type="button" (click)="confirm()" [disabled]="createCeForm.invalid">确定</button>
+        </div>
+  </app-w-dialog>
+</div>
+

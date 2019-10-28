@@ -1,0 +1,178 @@
+<div class="create-wrapper">
+  <button class="btn-primary" (click)="openDialog()"><i class="iconfont icon-plus"></i>新建高可用HA组</button>
+
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight" [height]="'730'">
+    <form class="form-container" [formGroup]="createHaForm">
+
+      <div class="clearfix" style="padding: 15px 0px;">
+        <span class="form-label">基础信息</span>
+      </div>
+
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">账户名<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model" style="width: 300px;">
+          <app-search-account [inputWidth]="'240px'" class="account-ref-wrapper" formControlName="accountRef"
+                              (selectedAccountChange)="accountChange($event)"></app-search-account>
+        </div>
+        <div class="form-error" *ngIf="accountRef.invalid && (accountRef.dirty || accountRef.touched)">
+          <p class="error" *ngIf="accountRef.errors['required']">用户信息必填</p>
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="form-name">
+          <span class="form-label">高可用HA组名称<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <input class="form-control" formControlName="name" placeholder="请输入至少6位HA组名称">
+        </div>
+        <div class="form-error" *ngIf="name.invalid && (name.dirty || name.touched)">
+          <p class="error" *ngIf="name.errors['required']">请输入HA组名称</p>
+          <p class="error" *ngIf="name.errors['minlength']">长度至少6位</p>
+          <p class="error" *ngIf="name.errors['pattern'] && !name.errors['minlength']">不能包含空格</p>
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="form-name">
+          <span class="form-label">VRID<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <input class="form-control" formControlName="vrid" placeholder="请输入VRID，范围[0-255]">
+        </div>
+        <div class="form-error" *ngIf="vrid.invalid && (vrid.dirty || vrid.touched)">
+          <p class="error" *ngIf="vrid.errors['required']">请输入VRID</p>
+          <p class="error" *ngIf="vrid.errors['max'] || vrid.errors['pattern']">请输入范围[0-255]之间的数字</p>
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="form-name">
+          <span class="form-label">VIP<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model form-input-group">
+          <input class="form-control" formControlName="vip1" maxlength="3">
+          <span>.</span>
+          <input class="form-control" formControlName="vip2" maxlength="3">
+          <span>.</span>
+          <input class="form-control" formControlName="vip3" maxlength="3">
+          <span>.</span>
+          <input class="form-control" formControlName="vip4" maxlength="3">
+          <span>/</span>
+          <input class="form-control" formControlName="vip5" maxlength="3">
+        </div>
+        <!--<div class="form-error form-error-group" *ngIf="vip1.invalid && (vip1.dirty || vip1.touched)">-->
+          <!--<p class="error" *ngIf="vip1.errors['required']">不能为空</p>-->
+          <!--<p class="error" *ngIf="vip1.errors['pattern']">输入错误</p>-->
+        <!--</div>-->
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="form-name">
+          <span class="form-label">SD-WAN网络名称<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <select class="form-control" formControlName="sdwanNetworkUuid" (change)="getCe(sdwanNetworkUuid.value)">
+            <option *ngFor="let sdwan of sdwanNetworkList" [value]="sdwan.uuid">{{sdwan.name}}</option>
+          </select>
+        </div>
+        <div class="form-error" *ngIf="tips.sdwanNetworkTip">
+          <p class="error" *ngIf="tips.sdwanNetworkTip">{{tips.sdwanNetworkTip}}</p>
+        </div>
+      </div>
+
+      <div class="clearfix" style="padding: 15px 0px;">
+        <span class="form-label">设备信息</span>
+      </div>
+
+      <div class="form-group clearfix ha-group-form">
+        <div class="ha-group ha-group-ce">
+          <div class="form-name">
+            <span class="form-label">设备1<span class="red">*</span>:</span>
+          </div>
+          <div class="form-model">
+            <select class="form-control width-160" formControlName="ceUuid_A" (change)="getCePort(ceUuid_A.value,'A')">
+              <option *ngFor="let ce of ceList_A" [value]="ce.uuid">{{ce.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="ha-group">
+          <div class="form-name">
+            <span class="form-label">优先级<span class="red">*</span>:</span>
+          </div>
+          <div class="form-model">
+            <input class="form-control" formControlName="priority_A" maxlength="3" (input)="clearTips()" >
+          </div>
+        </div>
+        <div class="ha-group ha-group-port">
+          <div class="form-name">
+            <span class="form-label">端口<span class="red">*</span>:</span>
+          </div>
+          <div class="form-model">
+            <select class="form-control width-224" formControlName="cePortUuid_A" (change)="getCePort_B()">
+              <option *ngFor="let cePort of cePortList_A" [value]="cePort.uuid">{{cePort.showName}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-error" *ngIf="priority_A.invalid && (priority_A.dirty || priority_A.touched)" style="padding-left: 240px;">
+          <p class="error" *ngIf="priority_A.errors['required']">请输入优先级</p>
+          <p class="error" *ngIf="priority_A.errors['min'] || priority_A.errors['max']" style="line-height: 18px;">范围:[2-254]</p>
+          <p class="error" *ngIf="priority_A.errors['pattern']" style="line-height: 18px;">只能是数字</p>
+        </div>
+      </div>
+
+      <div class="form-group clearfix ha-group-form">
+        <div class="ha-group ha-group-ce">
+          <div class="form-name">
+            <span class="form-label">设备2:</span>
+          </div>
+          <div class="form-model">
+            <select class="form-control width-160" formControlName="ceUuid_B" (change)="getCePort_B()">
+              <option *ngFor="let ce of ceList_B" [value]="ce.uuid">{{ce.name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="ha-group">
+          <div class="form-name">
+            <span class="form-label">优先级:</span>
+          </div>
+          <div class="form-model">
+            <input class="form-control" formControlName="priority_B" maxlength="3" (input)="clearTips()">
+          </div>
+        </div>
+        <div class="ha-group ha-group-port">
+          <div class="form-name">
+            <span class="form-label">端口:</span>
+          </div>
+          <div class="form-model">
+            <select class="form-control width-224" formControlName="cePortUuid_B">
+              <option *ngFor="let cePort of cePortList_B" [value]="cePort.uuid">{{cePort.showName}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-error" *ngIf="(priority_B.invalid && (priority_B.dirty || priority_B.touched)) && !tips.priority_B" style="padding-left: 240px;">
+          <p class="error" *ngIf="priority_B.errors['min'] || priority_B.errors['max']" style="line-height: 18px;">范围:[2-254]</p>
+          <p class="error" *ngIf="priority_B.errors['pattern']" style="line-height: 18px;">只能是数字</p>
+        </div>
+        <div class="form-error" *ngIf="tips.priority_B" style="padding-left: 240px;">
+          <p class="error">请输入优先级</p>
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="form-error" *ngIf="tips.priorityTip" style="padding-left: 0px;">
+          <p class="error" *ngIf="tips.priorityTip">{{tips.priorityTip}}</p>
+        </div>
+      </div>
+
+    </form>
+    <div class="btn-footer">
+      <button class="btn-default" type="button" (click)="cancel()">取消</button>
+      <button class="btn-primary" type="button" (click)="confirm()" [disabled]="createHaForm.invalid">确定</button>
+    </div>
+  </app-w-dialog>
+</div>
+

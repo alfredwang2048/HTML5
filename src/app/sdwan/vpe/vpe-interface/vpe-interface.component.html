@@ -1,0 +1,47 @@
+<app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width">
+  <div class="height-0">
+    <app-common-window #delete [title]="deleteCommonOption.title" [message]="deleteCommonOption.message" (done)="deleteDone()"></app-common-window>
+  </div>
+
+  <div class="content-box">
+
+    <ul class="header clearfix">
+      <li>
+        <span>VPE名称：</span>
+        <span>{{selectedItem?.name}}</span>
+      </li>
+      <li>
+        <span>节点：</span>
+        <span>{{selectedItem?.nodeName}}</span>
+      </li>
+    </ul>
+
+    <div class="contnet-list">
+      <div class="add-btn">
+        <app-vpe-interface-create [selectedItemVpe]="selectedItem" [interfaceLists]="interfaceLists" (done)="createDone()"></app-vpe-interface-create>
+      </div>
+      <div class="grid-list">
+        <app-grid class="s-grid" [data]="interfaceLists">
+          <app-grid-column field="number" header="序号">
+            <ng-template #slot let-dataItem let-rowIndex="rowIndex">
+              <span>{{rowIndex+1}}</span>
+            </ng-template>
+          </app-grid-column>
+
+          <app-grid-column field="endpointName" header="连接点"></app-grid-column>
+          <app-grid-column field="switchName" header="交换机名称"></app-grid-column>
+          <app-grid-column field="switchPortName" header="交换机端口"></app-grid-column>
+          <app-grid-column field="interfaceName" header="网卡名称"></app-grid-column>
+          <app-grid-column header="操作" width="80px">
+            <ng-template #slot let-dataItem>
+              <span (click)="openDeleteWin(dataItem)" class="delete">删除</span>
+            </ng-template>
+          </app-grid-column>
+        </app-grid>
+      </div>
+    </div>
+    <div class="btn-container">
+      <button type="button" class="btn-default" (click)="cancel()">关闭</button>
+    </div>
+  </div>
+</app-w-dialog>

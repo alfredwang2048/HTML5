@@ -1,0 +1,30 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight">
+    <form class="form-container">
+      <div class="form-group" *ngIf="isUpdate">
+        <div class="form-name">
+          <span class="form-label">SD-WAN网络:</span>
+        </div>
+        <div class="form-model">
+          <select class="form-control"
+                required
+                [(ngModel)]="model.sdwanNetworkUuid" name="network"
+                #network="ngModel">
+            <option *ngFor="let network of networks" [value]="network.uuid">{{network.name}}</option>
+          </select>
+        </div>
+      </div>
+      <div *ngIf="!isUpdate">
+        <div class="tips">
+          <span class="iconfont icon-jinggao-"></span>仅在禁用并且初始化后才能变更SD-WAN网络。
+        </div>
+      </div>
+    </form>
+    <div class="btn-footer">
+      <button class="btn-default" (click)="cancel()">取消</button>
+      <button class="btn-primary" (click)="confirm()" [disabled]="!isUpdate">确定</button>
+    </div>
+  </app-w-dialog>
+</div>
+

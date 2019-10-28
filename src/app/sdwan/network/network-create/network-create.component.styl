@@ -1,0 +1,55 @@
+:host
+  display: inline-block
+  margin-right: 15px
+.form-container
+  padding: 15px 15px 0
+  overflow: hidden
+  .form-error
+    margin-left: 120px
+    .error
+      color: #a94442
+  .form-group
+    margin-left 30px
+    overflow hidden
+    &::after
+      display: table-cell
+      content: ''
+      clear: both
+    .form-label
+      width: 120px
+    .form-control
+      margin-left: 120px
+      width: 240px
+    .form-error
+      margin-left: 120px
+    .account-ref-wrapper
+      width: 240px
+  .btn-container
+    background: #e1eef0
+.form-input-group input:not(:nth-of-type(2))
+  float left
+  width 39px!important
+  margin-left 0px!important
+  text-align center
+.form-input-group input:nth-of-type(2)
+  float left
+  width 48px!important
+  margin-left 0px!important
+  text-align center
+.form-input-group span
+  float left
+  padding 0px 3px
+  line-height 30px
+.form-error-group
+  margin-top 30px
+
+//.active
+//  border: 1px solid #00c1e0 !important
+//  background: rgba(188,237,245,.38) !important
+//  color: #00c1e0 !important
+//  box-shadow: none
+//  outline none
+.disabled
+  color #999
+.disabled:hover
+  background none

@@ -1,0 +1,38 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight">
+    <form class="form-container" #qosBandwidthForm="ngForm">
+      <div class="form-group" [hidden]="isTunnel">
+        <div class="form-name">
+          <span class="form-label">WAN带宽(Mbps)<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <input class="form-control" required pattern="[1-9]{1}[0-9]*" type="number" [(ngModel)]="model.bandwidth" name="bandwidth" #bandwidth="ngModel" placeholder="请输入带宽数">
+        </div>
+        <div class="form-error" *ngIf="bandwidth.invalid && (bandwidth.dirty || bandwidth.touched)">
+          <p class="error" *ngIf="bandwidth.errors.required">WAN带宽必填</p>
+          <p class="error" *ngIf="bandwidth.errors.pattern">格式错误</p>
+        </div>
+      </div>
+      <div class="form-group" [hidden]="!isTunnel">
+        <div class="form-name">
+          <span class="form-label">专线带宽(Mbps)<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <input class="form-control" required pattern="[1-9]{1}[0-9]*" type="number" [(ngModel)]="model.bandwidth" name="tunnel" #tunnel="ngModel" placeholder="请输入带宽数">
+        </div>
+        <div class="form-error" *ngIf="tunnel.invalid && (tunnel.dirty || tunnel.touched)">
+          <p class="error" *ngIf="tunnel.errors.required">专线带宽必填</p>
+          <p class="error" *ngIf="tunnel.errors.pattern">格式错误</p>
+        </div>
+      </div>
+      <p class="attention"><span class="iconfont icon-jinggao-"></span>CPE连接的{{isTunnel ? '专线' : 'Internet'}}出口带宽，默认{{isTunnel ? '500M' : '200M'}}。您需要修改为CPE本地实际{{isTunnel ? '专线' : 'Internet'}}带宽。</p>
+
+    </form>
+    <div class="btn-footer">
+      <button class="btn-default" (click)="cancel()">取消</button>
+      <button [ngStyle]="{display: isTunnel ? 'none' : ''}" class="btn-primary" (click)="confirm()" [disabled]="bandwidth.invalid">确定</button>
+      <button [ngStyle]="{display: isTunnel ? '' : 'none'}" class="btn-primary" (click)="confirm()" [disabled]="tunnel.invalid">确定</button>
+    </div>
+  </app-w-dialog>
+</div>

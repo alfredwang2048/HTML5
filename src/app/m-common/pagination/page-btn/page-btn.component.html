@@ -1,0 +1,4 @@
+<span *ngIf="dir === 'left'" class="btn-prev" [class.disabled]="disabled"
+        (click)="clickHandler(-1)"><i class="icon iconfont icon-arrow_left"></i>上一页</span>
+<span *ngIf="dir === 'right'" class="btn-next" [class.disabled]="disabled"
+        (click)="clickHandler(1)">下一页<i class="icon iconfont icon-arrow_right"></i></span>

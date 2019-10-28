@@ -1,0 +1,66 @@
+<app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width">
+  <form class="form-container" [formGroup]="updateVpeForm">
+
+    <div class="form-group">
+      <span class="form-label">编号:</span>
+      <span class="form-control-text">{{selectedItem?.code}}</span>
+    </div>
+
+    <div class="form-group">
+      <div class="form-name">
+        <span class="form-label">节点:</span>
+      </div>
+      <span class="form-control-text">{{selectedItem?.nodeName}}</span>
+    </div>
+
+    <div class="form-group">
+      <span class="form-label">VPE名称<span class="red">*</span>:</span>
+      <input type="text" class="form-control" formControlName="name">
+      <div class="form-error" *ngIf="name.invalid && (name.dirty || name.touched)">
+        <p class="error" *ngIf="name.errors['required']">名称必填</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <span class="form-label">位置<span class="red">*</span>:</span>
+      <input type="text" class="form-control" formControlName="address">
+      <div class="form-error" *ngIf="address.invalid && (address.dirty || address.touched)">
+        <p class="error" *ngIf="address.errors['required']">位置必填</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <span class="form-label">管理IP<span class="red">*</span>:</span>
+      <input type="text" class="form-control" formControlName="manageIp">
+      <div class="form-error" *ngIf="manageIp.invalid && (manageIp.dirty || manageIp.touched)">
+        <p class="error" *ngIf="manageIp.errors['required']">管理IP必填</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <span class="form-label">SSH端口<span class="red">*</span>:</span>
+      <input type="text" class="form-control" formControlName="sshPort">
+      <div class="form-error" *ngIf="sshPort.invalid && (sshPort.dirty || sshPort.touched)">
+        <p class="error" *ngIf="sshPort.errors['required']">SSH端口必填</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <span class="form-label">用户名<span class="red">*</span>:</span>
+      <input type="text" class="form-control" formControlName="username">
+      <div class="form-error" *ngIf="username.invalid && (username.dirty || username.touched)">
+        <p class="error" *ngIf="username.errors['required']">用户名必填</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <span class="form-label">密码:</span>
+      <input type="text" class="form-control" formControlName="password">
+    </div>
+  </form>
+  <div class="btn-footer">
+      <button type="button" class="btn-default" (click)="cancel()">取消</button>
+      <button type="button" class="btn-primary" (click)="confirm()" [disabled]="updateVpeForm.invalid">确定</button>
+    </div>
+</app-w-dialog>
+

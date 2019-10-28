@@ -1,0 +1,8 @@
+<div class="pagination">
+  <app-page-btn class="prev" *ngIf="hasPrev" [dir]="'left'" [disabled]="currentPage<=1" (next)="changePageHandler($event)"></app-page-btn>
+  <app-pager class="pager" *ngIf="hasPager" [current]="currentPage" [count]="pageTotal" (next)="changePageHandler($event)"></app-pager>
+  <app-page-btn class="next" *ngIf="hasNext" [dir]="'right'" [disabled]="currentPage >= pageTotal" (next)="changePageHandler($event)"></app-page-btn>
+  <app-jump class="jump" *ngIf="hasJump" [current]="currentPage" (next)="changePageHandler($event)" [max]="pageTotal"></app-jump>
+  <div class="detail">页数<span>{{currentPage}}</span>/{{pageTotal}}</div>
+  <app-page-size class="sizer" [sizes]="pageSizes" [size]="pageSize" (sizeChange)="updateSize($event)" *ngIf="hasSize"></app-page-size>
+</div>

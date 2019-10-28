@@ -1,0 +1,77 @@
+:host
+  display: inline-block
+.cascade
+  position: relative
+  .input-wrapper
+    position: relative
+    .cascade-input
+      height: 30px
+      width: 100%
+      border: 1px solid #ccc
+      border-radius: 2px
+      line-height: 30px
+      vertical-align: middle
+    i, b
+      position: absolute
+      top: 8px
+      height: 16px
+      width: 16px
+      line-height: 16px
+      text-align: center
+    i
+      right: 2px
+    b
+      right: 18px
+      border-radius: 100%
+      background: #eee
+      cursor: pointer
+  .cascade-menu-wrapper
+    position: absolute
+    top: 100%
+    left: 0
+    z-index: 5
+    margin-top: 2px
+    border-radius: 2px
+    font-size: 0
+    white-space: nowrap
+    -webkit-box-shadow: 0 2px 12px rgba(0,0,0,.1)
+    box-shadow: 0 2px 12px rgba(0,0,0,.1)
+    background: #fff
+    .cascade-menu
+      display: inline-block
+      height: 170px
+      font-size: 12px
+      border-right: 1px solid #dfe4ed
+      vertical-align: top
+      overflow-x: hidden
+      overflow-y: auto
+      &:last-child
+        border-right-width: 0
+      .cascade-menu-header
+        padding-left: 12px
+        padding-right: 18px
+        height: 30px
+        border-bottom: 1px solid #dfe4ed
+        line-height: 30px
+        text-align: center
+        font-weight: 600
+      .cascade-list
+        position: relative
+        padding-left: 12px
+        padding-right: 18px
+        height: 28px
+        line-height: 28px
+        cursor: pointer
+        &:hover
+          background: #eee
+        &.active
+          color: #00c1e0
+        i
+          position: absolute
+          top: 5px
+          right: 0
+          width: 16px
+          height: 16px
+          line-height: 16px
+.input-wrapper b
+  font-size 12px

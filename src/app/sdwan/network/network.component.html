@@ -1,0 +1,66 @@
+<div class="height-0">
+  <app-network-update #networkUpdate [selectedNetwork]="selectedItem" (done)="updateDone()"></app-network-update>
+  <app-assign-vpe #assignVpe [assignType]="'network'" [selectedItem]="selectedItem" (done)="assingDone($event)"></app-assign-vpe>
+  <app-common-window #delete [title]="deleteCommonOption.title" [message]="deleteCommonOption.message" [width]="deleteCommonOption.width"
+                     (done)="deleteDone()"></app-common-window>
+  <app-set-manager #manager [selectedItem]="selectedItem" [inputResourceType]="'SDWAN'"></app-set-manager>
+  <app-network-detail #detail [selectedItem]="selectedItem" (done)="renewDone()"></app-network-detail>
+  <app-loading-window #loading></app-loading-window>
+</div>
+<div class="title">SD-WAN网络<app-help-doc #helpDoc [title]="helpDocOption.title" [docContent]="helpDocOption.docContent" [docHrefContent]="helpDocOption.docHrefContent"></app-help-doc></div>
+<div class="content-menu">
+  <app-network-create (done)="createDone()"></app-network-create>
+  <app-network-search (done)="searchDone($event)"></app-network-search>
+</div>
+<div class="grid-wrapper">
+  <app-grid class="s-grid" [currentRowIndex]="currentRowIndex" [data]="networks" (selection-change)="showDetail($event)" [loading]="gridLoading">
+    <app-grid-column field="name" header="SD-WAN网络名称">
+      <ng-template #slot let-dataItem>
+        <p *ngIf="dataItem.purpose=='NORMAL'">
+          <span class="label label-small label-sys">普通</span>&nbsp;<a class="link" (click)="stopEvent($event)" href="#/sdwan/cpe?name=sdwanNetworkUuid&value={{dataItem.uuid}}">{{dataItem.name}}</a>
+        </p>
+        <p *ngIf="dataItem.purpose=='TEST'">
+          <span class="label label-small label-info">测试</span>&nbsp;<a class="link" (click)="stopEvent($event)" href="#/sdwan/cpe?name=sdwanNetworkUuid&value={{dataItem.uuid}}">{{dataItem.name}}</a>
+        </p>
+        <p *ngIf="dataItem.purpose=='Syscloud'">
+          <span class="label label-small label-sys">Syscloud</span>&nbsp;<a class="link" (click)="stopEvent($event)" href="#/sdwan/cpe?name=sdwanNetworkUuid&value={{dataItem.uuid}}">{{dataItem.name}}</a>
+        </p>
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column field="accountName" header="账户名"></app-grid-column>
+    <app-grid-column field="companyName" header="公司名"></app-grid-column>
+    <app-grid-column field="ceNum" header="CPE数量"></app-grid-column>
+    <app-grid-column field="onlineCeNum" header="在线数量"></app-grid-column>
+    <app-grid-column field="offlineCeNum" header="离线数量"></app-grid-column>
+    <app-grid-column field="l3networkType" header="类型">
+      <ng-template #slot let-dataItem>
+        {{dataItem.l3networkType === 'NEW' ? '自动':'指定'}}
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column field="createDate" header="创建时间">
+      <ng-template #slot let-dataItem>
+        {{dataItem.createDate | date: 'yyyy-MM-dd HH:mm:ss'}}
+      </ng-template>
+    </app-grid-column>
+    <app-grid-column field="description" header="描述"></app-grid-column>
+    <app-grid-column header="操作" width="80px">
+      <ng-template #slot let-dataItem let-rowIndex="rowIndex">
+        <app-w-dropdown (click)="selectedRow(dataItem, rowIndex)">
+          <ng-container drop-type="toggle">更多</ng-container>
+          <ul drop-type="menu" class="grid-drop-menu">
+            <li><a href="#/sdwan/cpe?name=sdwanNetworkUuid&value={{dataItem.uuid}}">查看CPE</a></li>
+            <li (click)="assignVpe.open()">指定VPE</li>
+            <li (click)="setManager()">设置负责人</li>
+            <li (click)="networkUpdate.open()">修改</li>
+            <li (click)="openDeleteWin(dataItem, rowIndex)">删除</li>
+            <li *ngIf="dataItem.ceNum"><a [routerLink]="['../network/topo', dataItem.uuid]" [queryParams]="{name: dataItem.name}">网络拓扑</a></li>
+          </ul>
+        </app-w-dropdown>
+      </ng-template>
+    </app-grid-column>
+  </app-grid>
+  <div class="tips" *ngIf="pagination.show"><span class="iconfont icon-jinggao-"></span>注：点击上方列表空白处可查看该SD-WAN网络详情。</div>
+  <app-pagination *ngIf="pagination.show" [(pageSize)]="pagination.size" (pageSizeChange)="pageChange($event, true)"
+                  [dataTotal]="pagination.total" [(currentPage)]="pagination.current"
+                  (currentPageChange)="pageChange($event, false)" [layout]="pagination.layout"></app-pagination>
+</div>

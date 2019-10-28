@@ -1,0 +1,17 @@
+<app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width" (visibleChange)="visibleChange($event)">
+  <div class="chart-wrapper">
+    <div class="search-wrapper clearfix">
+      <app-daterangepicker [(model)]="rangeModel" class="daterange-host"></app-daterangepicker>
+      <button type="button" class="btn-primary" (click)="searchHandler()">查询</button>
+    </div>
+    <div class="chart-list clearfix">
+      <div class="line-chart" *ngFor="let item of chartArray" [ngStyle]="{float: item.haType === 'Master'?'left':'right', width: chartArray.length === 1 ? '100%' : '50%'}">
+        <div echarts [options]="item.options" [merge]="item.merge" [loading]="item.isLoading" *ngIf="!item.noData"></div>
+        <div class="no-data" *ngIf="!item.isLoading && item.noData">暂无数据</div>
+      </div>
+    </div>
+    <div class="btn-container">
+      <button type="button" class="btn-default" (click)="close()">关闭</button>
+    </div>
+  </div>
+</app-w-dialog>

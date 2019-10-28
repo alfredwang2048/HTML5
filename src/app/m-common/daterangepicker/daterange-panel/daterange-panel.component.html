@@ -1,0 +1,73 @@
+<div class="date-range-panel clearfix" [@dropAnimation]="show">
+  <div class="range-panel-body">
+    <div class="left-calendar">
+      <div class="calendar-header">
+        <span class="prev-btn iconfont icon-calendar-left" (click)="nextYear(-1)"></span>
+        <span class="prev-btn iconfont icon-calendar-single-left" (click)="nextMonth(-1)"></span>
+        <span class="calendar-label">{{startDate.getFullYear()}} 年 {{startDate.getMonth() + 1}} 月</span>
+      </div>
+      <table class="calendar-body" cellspacing="0" cellpadding="0">
+        <tr>
+          <th *ngFor="let week of weeks">{{week}}</th>
+        </tr>
+        <tr *ngFor="let row of tablePrevRows">
+          <td *ngFor="let item of row" [class.next-month]="item.monthOffset === 1" [class.prev-month]="item.monthOffset === -1" [class.today]="isToday(item)" [class.range-start]="calStatus(item) === 'start'" [class.range-end]="calStatus(item) === 'end'" [class.range-in]="calStatus(item) === 'in'" [class.range-circle]="calStatus(item) === 'circle'" [class.disable]="calStatus(item) === 'disable'" (click)="clickHandle(item)" (mouseenter)="mouseOverHandle(item)">
+            <span>{{item.day}}</span>
+          </td>
+        </tr>
+      </table>
+      <div class="calendar-footer">
+        <select class="form-control time-select" [value]="currentStartHour" (change)="currentStartHour = $event.target.value;">
+          <option *ngFor="let hour of hours">{{hour}}</option>
+        </select>
+        时
+        <select class="form-control time-select" [value]="currentStartMinutes" (change)="currentStartMinutes = $event.target.value;">
+          <option *ngFor="let mi of minutes">{{mi}}</option>
+        </select>
+        分
+        <select class="form-control time-select" [value]="currentStartSecond" (change)="currentStartSecond = $event.target.value;">
+          <option *ngFor="let second of seconds">{{second}}</option>
+        </select>
+        秒
+      </div>
+    </div>
+    <div class="right-calendar">
+      <div class="calendar-header">
+        <span class="calendar-label">{{endDate.getFullYear()}} 年 {{endDate.getMonth() + 1}} 月</span>
+        <span class="next-btn iconfont icon-calendar-right" (click)="nextYear(1)"></span>
+        <span class="next-btn iconfont icon-calendar-single-right" (click)="nextMonth(1)"></span>
+      </div>
+      <table class="calendar-body" cellspacing="0" cellpadding="0">
+        <tr>
+          <th *ngFor="let week of weeks">{{week}}</th>
+        </tr>
+        <tr *ngFor="let row of tableNextRows">
+          <td *ngFor="let item of row" [class.next-month]="item.monthOffset === 1" [class.prev-month]="item.monthOffset === -1" [class.today]="isToday(item)" [class.range-start]="calStatus(item) === 'start'" [class.range-end]="calStatus(item) === 'end'" [class.range-in]="calStatus(item) === 'in'" [class.range-circle]="calStatus(item) === 'circle'" [class.disable]="calStatus(item) === 'disable'" (click)="clickHandle(item)" (mouseenter)="mouseOverHandle(item)">
+            <span>{{item.day}}</span>
+          </td>
+        </tr>
+      </table>
+      <div class="calendar-footer">
+        <select class="form-control time-select" [value]="currentEndHour" (change)="currentEndHour = $event.target.value;">
+          <option *ngFor="let hour of hours">{{hour}}</option>
+        </select>
+        时
+        <select class="form-control time-select" [value]="currentEndMinutes" (change)="currentEndMinutes = $event.target.value;">
+          <option *ngFor="let mi of minutes">{{mi}}</option>
+        </select>
+        分
+        <select class="form-control time-select" [value]="currentEndSecond" (change)="currentEndSecond = $event.target.value;">
+          <option *ngFor="let second of seconds">{{second}}</option>
+        </select>
+        秒
+      </div>
+    </div>
+  </div>
+  <div class="range-panel-footer">
+    <span class="error" *ngIf="hasError">
+      结束时间小于起始时间，请选择正确的时间
+    </span>
+    <button class="clear-btn" type="button" (click)="clearHandle()">清空</button>
+    <button class="confirm-btn" type="button" (click)="confirmHandle()">确定</button>
+  </div>
+</div>

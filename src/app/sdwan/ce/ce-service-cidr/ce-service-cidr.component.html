@@ -1,0 +1,24 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight">
+    <form class="form-container" #serviceCidrForm="ngForm">
+      <div class="form-group clearfix">
+        <div class="form-name">
+          <span class="form-label">业务网段(CIDR)<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <input class="form-control" required [(ngModel)]="model.cidr" name="cidr" #cidr="ngModel"
+                 placeholder="请输入CIDR网段,如：10.1.0.0/24">
+        </div>
+        <div class="form-error" *ngIf="cidr.invalid && (cidr.dirty || cidr.touched)">
+          <p class="error">业务网段必填</p>
+        </div>
+      </div>
+
+    </form>
+    <div class="btn-footer">
+      <button class="btn-default" (click)="cancel()">取消</button>
+      <button class="btn-primary" (click)="confirm()" [disabled]="serviceCidrForm.form.invalid">确定</button>
+    </div>
+  </app-w-dialog>
+</div>

@@ -1,0 +1,34 @@
+<div class="create-wrapper">
+  <app-w-dialog [title]="dialogOptions.title" [(visible)]="dialogOptions.visible" [width]="dialogOptions.width"
+                [changeHeight]="dialogOptions.changeHeight" (visibleChange)="cancel();">
+    <form class="form-container" [formGroup]="changePopTypeForm">
+      <div class="form-group">
+        <div class="form-name">
+          <span class="form-label">选择链路<span class="red">*</span>:</span>
+        </div>
+        <div class="form-model">
+          <select class="form-control" formControlName="type">
+            <option *ngFor="let type of types" [value]="type.uuid">{{type.name}}</option>
+          </select>
+        </div>
+        <div class="form-error" *ngIf="type.invalid && (type.dirty || type.touched)">
+          <p class="error" *ngIf="type.errors['required']">链路类型必填</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-name form-label">
+          变更为:
+        </div>
+        <div class="form-model form-label">
+          专线
+        </div>
+      </div>
+      <app-bottom-comment [comment]="'注：目前只支持链路类型变更为专线'"></app-bottom-comment>
+    </form>
+    <div class="btn-footer">
+          <button class="btn-default" (click)="cancel()">取消</button>
+          <button class="btn-primary" (click)="confirm()" [disabled]="changePopTypeForm.invalid">确定</button>
+        </div>
+  </app-w-dialog>
+</div>
+

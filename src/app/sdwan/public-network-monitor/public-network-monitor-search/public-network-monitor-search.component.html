@@ -1,0 +1,4 @@
+<div class="search-wrapper">
+  <app-relate-input class="relate" [model]="relateOptions" (relateChange)="relateChange($event)" [relateName]="searchInitObj.name" [relateValue]="searchInitObj.value"></app-relate-input>
+  <button type="button" class="btn-primary" (click)="searchHandler()">查询</button>
+</div>

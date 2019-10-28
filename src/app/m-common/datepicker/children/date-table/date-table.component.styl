@@ -1,0 +1,41 @@
+.date-table
+  table-layout: fixed
+  width: 100%
+  font-size: 12px
+  user-select: none
+  th
+    padding: 5px
+    border-bottom: 1px solid #eee
+    color: #5a5e66
+    font-weight: 400
+  td
+    position: relative
+    -webkit-box-sizing: border-box
+    box-sizing: border-box
+    width: 32px
+    height: 30px
+    padding: 4px 0
+    text-align: center
+    cursor: pointer
+    &.prev-month, &.next-month
+      color: #b4bccc
+    span
+      position: absolute
+      top: 2px
+      left: 50%
+      display: block
+      width: 24px
+      height: 24px
+      margin: 0 auto
+      border-radius: 50%
+      line-height: 24px
+      -webkit-transform: translateX(-50%)
+      transform: translateX(-50%)
+    &.today
+      span
+        color: #fff
+        background-color: #409eff
+    &.current
+      span
+        color: #fff
+        background: #00c1e0

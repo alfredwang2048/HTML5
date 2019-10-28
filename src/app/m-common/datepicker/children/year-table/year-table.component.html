@@ -1,0 +1,7 @@
+<table class="year-table">
+  <tr *ngFor="let years of yearRows">
+    <td *ngFor="let year of years" [class.current]="year === currentYear" (click)="clickHandle(year)">
+      <span class="cell">{{year}}</span>
+    </td>
+  </tr>
+</table>

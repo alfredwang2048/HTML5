@@ -1,0 +1,334 @@
+<app-right-modal [title]="modelOption.title" [width]="modelOption.width" [(toggle)]="modelOption.toggle">
+  <div class="tab">
+    <app-nav-tabs [width]="'100px'" [lists]="navTabLists" [(ngModel)]="currentTab"
+                  (modelChange)="navTabsDone($event)"></app-nav-tabs>
+  </div>
+
+  <ul class="list right-detail">
+    <li *ngIf="currentTab.value === 'deviceInfo'" class="item">
+      <h3>基本信息</h3>
+      <ul>
+        <li><span class="name">SD-WAN网络UUID</span><span class="text">{{selectedItem?.uuid}}</span></li>
+        <li><span class="name">SD-WAN网络名称</span><span class="text">{{selectedItem?.name}}</span></li>
+        <li *ngIf="currentL3network"><span class="name">云网络UUID</span><span
+          class="text">{{selectedItem?.l3networkUuid}}</span></li>
+        <li *ngIf="currentL3network"><span class="name">云网络名称</span><span class="text">{{currentL3network?.name}}</span></li>
+        <li><span class="name">账户名</span><span class="text">{{selectedItem?.accountName}}</span></li>
+        <li><span class="name">公司名</span><span class="text">{{selectedItem?.companyName}}</span></li>
+        <li><span class="name">CPE数量</span><span class="text">{{selectedItem?.ceNum}}</span></li>
+        <li><span class="name">在线数量</span><span class="text">{{selectedItem?.onlineCeNum}}</span></li>
+        <li><span class="name">离线数量</span><span class="text">{{selectedItem?.offlineCeNum}}</span></li>
+        <li>
+          <span class="name">用途</span>
+          <span class="text" *ngIf="selectedItem?.purpose === 'NORMAL'">普通</span>
+          <span class="text" *ngIf="selectedItem?.purpose === 'TEST'">测试</span>
+          <span class="text" *ngIf="selectedItem?.purpose === 'Syscloud'">Syscloud</span>
+        </li>
+        <li>
+          <span class="name">VPE类型</span>
+          <span class="text" *ngIf="selectedItem?.distribution === 'AUTO'">全部VPE</span>
+          <span class="text" *ngIf="selectedItem?.distribution === 'ASSIGN'">指定VPE</span>
+        </li>
+        <li *ngIf="selectedItem?.distribution === 'ASSIGN'">
+          <span class="name">已选VPE</span>
+          <div class="text selectVpe">
+            <span *ngFor="let vpe of currentVpe">{{vpe.name}}</span>
+          </div>
+        </li>
+        <li><span class="name">互联地址</span><span class="text">{{selectedItem?.cidr}}</span></li>
+        <li><span class="name">vid</span><span class="text">{{selectedItem?.vid}}</span></li>
+        <li>
+          <span class="name">创建时间</span>
+          <span class="text">{{selectedItem?.createDate | date: 'yyyy-MM-dd HH:mm:ss'}}</span>
+        </li>
+        <li><span class="name">描述</span><span class="text">{{selectedItem?.description}}</span></li>
+        <li class="listManagerRole detail-split-line">
+          <div><strong>产品负责人</strong></div>
+          <ul>
+            <li class="clearfix">
+              <span class="name">业务负责人</span>
+              <span class="text">{{listManagerRoles.resource.businessName}}</span>
+            </li>
+            <li class="clearfix"><span class="name">项目负责人</span><span
+              class="text">{{listManagerRoles.resource.projectName}}</span>
+            </li>
+            <li class="clearfix"><span class="name">客户运营负责人</span><span class="text">{{listManagerRoles.resource.customerName}}</span>
+            </li>
+          </ul>
+          <div><strong>客户负责人</strong></div>
+          <ul>
+            <li class="clearfix">
+              <span class="name">业务负责人</span>
+              <span class="text">{{listManagerRoles.account.businessName}}</span>
+            </li>
+            <li class="clearfix"><span class="name">项目负责人</span><span
+              class="text">{{listManagerRoles.account.projectName}}</span>
+            </li>
+            <li class="clearfix"><span class="name">客户运营负责人</span><span class="text">{{listManagerRoles.account.customerName}}</span>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+
+    <li *ngIf="currentTab.value === 'other'" class="text-tips">预配置为SD-WAN网络预先定义的CPE配置，CPE首次加入该网络时可选择启用该配置。预配置修改不影响该网络内已有CPE。</li>
+
+    <li *ngIf="currentTab.value === 'other'" class="item" [ngClass]="{'isAccordion': accordionItems.item1}">
+      <h3>
+        防火墙配置
+        <i [ngStyle]="{'margin-left':'5px'}" class="iconfont icon-cog" (click)="firewallEleRf.openDialog();$event.stopPropagation();" [appToolTip]="'配置防火墙'"></i>
+        <i (click)="accordion('item1')" [appToolTip]="'展开'" [hidden]="!accordionItems.item1" class="iconfont arrow icon-arrow_right"></i>
+        <i (click)="accordion('item1')" [appToolTip]="'折叠'" [hidden]="accordionItems.item1" class="iconfont arrow icon-arrow_down"></i>
+      </h3>
+      <div class="grid-wrapper">
+        <app-grid class="s-grid" [data]="fireWalls" [loading]="fireWallFridLoading">
+          <app-grid-column field="srcIP" header="源地址"></app-grid-column>
+          <app-grid-column field="destIP" header="目的地址"></app-grid-column>
+          <app-grid-column field="srcPort" header="源端口">
+            <ng-template #slot let-dataItem>{{dataItem.srcPort ? dataItem.srcPort : ''}}</ng-template>
+          </app-grid-column>
+          <app-grid-column field="destPort" header="目的端口">
+            <ng-template #slot let-dataItem>{{dataItem.destPort ? dataItem.destPort : ''}}</ng-template>
+          </app-grid-column>
+          <app-grid-column field="protocol" header="协议"></app-grid-column>
+          <app-grid-column field="direction" header="方向"></app-grid-column>
+          <app-grid-column field="action" header="操作"></app-grid-column>
+        </app-grid>
+        <app-pagination *ngIf="fireWallPagination.show" [(pageSize)]="fireWallPagination.size"
+                        (pageSizeChange)="fireWallPageChange($event, true)"
+                        [dataTotal]="fireWallPagination.total" [(currentPage)]="fireWallPagination.current"
+                        (currentPageChange)="fireWallPageChange($event, false)"
+                        [layout]="fireWallPagination.layout"></app-pagination>
+      </div>
+    </li>
+
+    <li *ngIf="currentTab.value === 'other'" class="item" [ngClass]="{'isAccordion': accordionItems.item2}">
+      <h3>
+        QoS规则
+        <i [ngStyle]="{'margin-left':'5px'}" class="iconfont icon-cog" (click)="qosEleRf.openDialog();$event.stopPropagation();" [appToolTip]="'配置QoS'"></i>
+        <i (click)="accordion('item2')" [appToolTip]="'展开'" [hidden]="!accordionItems.item2" class="iconfont arrow icon-arrow_right"></i>
+        <i (click)="accordion('item2')" [appToolTip]="'折叠'" [hidden]="accordionItems.item2" class="iconfont arrow icon-arrow_down"></i>
+      </h3>
+      <div class="grid-wrapper">
+        <app-grid class="s-grid" [data]="Qoss" [loading]="qosLoading">
+          <app-grid-column field="srcIp" header="源地址"></app-grid-column>
+          <app-grid-column field="destIp" header="目的地址"></app-grid-column>
+          <app-grid-column field="srcPort" header="源端口">
+            <ng-template #slot let-dataItem>{{dataItem.srcPort ? dataItem.srcPort : ''}}</ng-template>
+          </app-grid-column>
+          <app-grid-column field="destPort" header="目的端口">
+            <ng-template #slot let-dataItem>{{dataItem.destPort ? dataItem.destPort : ''}}</ng-template>
+          </app-grid-column>
+          <app-grid-column field="protocol" header="协议"></app-grid-column>
+          <app-grid-column field="type" header="类型"></app-grid-column>
+          <app-grid-column field="level" header="优先级">
+            <ng-template #slot let-dataItem>
+              <span *ngIf="dataItem.level === 'GOLD'">金</span>
+              <span *ngIf="dataItem.level === 'SILVER'">银</span>
+              <span *ngIf="dataItem.level === 'COPPER'">铜</span>
+            </ng-template>
+          </app-grid-column>
+        </app-grid>
+        <app-pagination *ngIf="qosPagination.show" [(pageSize)]="qosPagination.size"
+                        (pageSizeChange)="qosPageChange($event, true)"
+                        [dataTotal]="qosPagination.total" [(currentPage)]="qosPagination.current"
+                        (currentPageChange)="qosPageChange($event, false)"
+                        [layout]="qosPagination.layout"></app-pagination>
+      </div>
+    </li>
+
+    <li *ngIf="currentTab.value === 'other'" class="item" [ngClass]="{'isAccordion': accordionItems.item3}">
+      <div class="policyPath">
+        <div class="form-group">
+          <h3>
+            应用策略
+            <i (click)="accordion('item3')" [appToolTip]="'展开'" [hidden]="!accordionItems.item3" class="iconfont arrow icon-arrow_right"></i>
+            <i (click)="accordion('item3')" [appToolTip]="'折叠'" [hidden]="accordionItems.item3" class="iconfont arrow icon-arrow_down"></i>
+          </h3>
+          <div class="grid-wrapper">
+            <app-grid class="s-grid" [data]="appModels">
+              <app-grid-column field="name" width="80px">
+                <ng-template #header>
+                  <input (change)="selectAllApp(app_input_box)" type="checkbox" name="" [(ngModel)]="app_input_box">全选
+                </ng-template>
+                <ng-template #slot let-dataItem>
+                  <span *ngIf="dataItem.type !== 'DEFAULT'"><input (change)="clickAppId()" [(ngModel)]="dataItem.status" [(checked)]="app_input_box" type="checkbox"/></span>
+                </ng-template>
+              </app-grid-column>
+              <app-grid-column field="name" header="应用名称">
+                <ng-template #slot let-dataItem>
+                  {{dataItem.name === 'DEFAULT' ? '默认' : dataItem.name}}
+                  <i *ngIf="dataItem.name !== 'DEFAULT'" class="iconfont icon-edit" [appToolTip]="'修改名称'" (click)="updateAppName(dataItem)"></i>
+                </ng-template>
+              </app-grid-column>
+              <app-grid-column field="level" header="链路">
+                <ng-template #slot let-dataItem>
+                  {{dataItem.haType === 'Master' ? '主链路' : '备链路'}}
+                </ng-template>
+              </app-grid-column>
+              <app-grid-column field="level" header="故障切换">
+                <ng-template #slot let-dataItem>
+                  <span class="btn-sm" [ngClass]="{'btn-success':dataItem.failover,'btn-error':!dataItem.failover}">{{dataItem.failover ? '已启用' : '已禁用'}}</span>
+                </ng-template>
+              </app-grid-column>
+              <app-grid-column header="操作" width="80px">
+                <ng-template #slot let-dataItem let-rowIndex="rowIndex">
+                  <a class="sys-link" *ngIf="dataItem.type !== 'DEFAULT'" (click)="configAppDefination(dataItem)">编辑</a>
+                </ng-template>
+              </app-grid-column>
+            </app-grid>
+          </div>
+        </div>
+        <div class="form-group btn-wrapper">
+          <button class="btn-primary" type="button" (click)="addAppModelEleRf.openDialog()"><i class="iconfont icon-plus"></i>添加应用链路</button>
+          <button class="btn-primary" [disabled]="!selectedApps.length" (click)="deleteAppModelClick()">删除</button>
+        </div>
+      </div>
+    </li>
+
+    <!--
+
+    <li *ngIf="currentTab.value === 'fireWallInfo'" class="item">
+      <h3 [ngStyle]="{'margin-bottom': '15px'}">防火墙配置<i [ngStyle]="{'margin-left':'5px'}" class="iconfont icon-cog"
+                                                        (click)="firewallEleRf.openDialog()" [appToolTip]="'配置防火墙'"></i>
+      </h3>
+      <div class="grid-wrapper">
+        <app-grid class="s-grid" [data]="fireWalls" [loading]="fireWallFridLoading">
+          <app-grid-column field="srcIP" header="源地址"></app-grid-column>
+          <app-grid-column field="destIP" header="目的地址"></app-grid-column>
+          <app-grid-column field="srcPort" header="源端口">
+            <ng-template #slot let-dataItem>{{dataItem.srcPort ? dataItem.srcPort : ''}}</ng-template>
+          </app-grid-column>
+          <app-grid-column field="destPort" header="目的端口">
+            <ng-template #slot let-dataItem>{{dataItem.destPort ? dataItem.destPort : ''}}</ng-template>
+          </app-grid-column>
+          <app-grid-column field="protocol" header="协议"></app-grid-column>
+          <app-grid-column field="direction" header="方向"></app-grid-column>
+          <app-grid-column field="action" header="操作"></app-grid-column>
+        </app-grid>
+        <app-pagination *ngIf="fireWallPagination.show" [(pageSize)]="fireWallPagination.size"
+                        (pageSizeChange)="fireWallPageChange($event, true)"
+                        [dataTotal]="fireWallPagination.total" [(currentPage)]="fireWallPagination.current"
+                        (currentPageChange)="fireWallPageChange($event, false)"
+                        [layout]="fireWallPagination.layout"></app-pagination>
+      </div>
+    </li>
+
+    <li *ngIf="currentTab.value === 'Qos'" class="item">
+      <h3 [ngStyle]="{'margin-bottom': '15px'}">QoS规则<i [ngStyle]="{'margin-left':'5px'}" class="iconfont icon-cog"
+                                                        (click)="qosEleRf.openDialog()" [appToolTip]="'配置QoS'"></i></h3>
+      <div class="grid-wrapper">
+        <app-grid class="s-grid" [data]="Qoss" [loading]="qosLoading">
+          <app-grid-column field="srcIp" header="源地址"></app-grid-column>
+          <app-grid-column field="destIp" header="目的地址"></app-grid-column>
+          <app-grid-column field="srcPort" header="源端口">
+            <ng-template #slot let-dataItem>{{dataItem.srcPort ? dataItem.srcPort : ''}}</ng-template>
+          </app-grid-column>
+          <app-grid-column field="destPort" header="目的端口">
+            <ng-template #slot let-dataItem>{{dataItem.destPort ? dataItem.destPort : ''}}</ng-template>
+          </app-grid-column>
+          <app-grid-column field="protocol" header="协议"></app-grid-column>
+          <app-grid-column field="type" header="类型"></app-grid-column>
+          <app-grid-column field="level" header="优先级">
+            <ng-template #slot let-dataItem>
+              <span *ngIf="dataItem.level === 'GOLD'">金</span>
+              <span *ngIf="dataItem.level === 'SILVER'">银</span>
+              <span *ngIf="dataItem.level === 'COPPER'">铜</span>
+            </ng-template>
+          </app-grid-column>
+        </app-grid>
+        <app-pagination *ngIf="qosPagination.show" [(pageSize)]="qosPagination.size"
+                        (pageSizeChange)="qosPageChange($event, true)"
+                        [dataTotal]="qosPagination.total" [(currentPage)]="qosPagination.current"
+                        (currentPageChange)="qosPageChange($event, false)"
+                        [layout]="qosPagination.layout"></app-pagination>
+      </div>
+    </li>
+
+    <li [hidden]="!(currentTab.value === 'policy')" class="item">
+      <div class="policyPath">
+        <div class="form-group">
+          <h3>应用策略</h3>
+          <div class="grid-wrapper">
+              <app-grid [hasBorder]="true" class="s-grid" [data]="appModels">
+                <app-grid-column field="name" width="80px">
+                  <ng-template #header>
+                    <input (change)="selectAllApp(app_input_box)" type="checkbox" name="" [(ngModel)]="app_input_box">全选
+                  </ng-template>
+                  <ng-template #slot let-dataItem>
+                    <span *ngIf="dataItem.type !== 'DEFAULT'"><input (change)="clickAppId()" [(ngModel)]="dataItem.status" [(checked)]="app_input_box" type="checkbox"/></span>
+                  </ng-template>
+                </app-grid-column>
+                <app-grid-column field="name" header="应用名称">
+                  <ng-template #slot let-dataItem>
+                    {{dataItem.name === 'DEFAULT' ? '默认' : dataItem.name}}
+                  </ng-template>
+                </app-grid-column>
+                <app-grid-column field="level" header="链路">
+                  <ng-template #slot let-dataItem>
+                    {{dataItem.haType === 'Master' ? '主链路' : '备链路'}}
+                  </ng-template>
+                </app-grid-column>
+                <app-grid-column field="level" header="故障切换">
+                  <ng-template #slot let-dataItem>
+                    <span class="btn-sm" [ngClass]="{'btn-success':dataItem.failover,'btn-error':!dataItem.failover}">{{dataItem.failover ? '已启用' : '已禁用'}}</span>
+                  </ng-template>
+                </app-grid-column>
+              </app-grid>
+            </div>
+        </div>
+        <div class="form-group">
+          <button class="btn-primary" type="button" (click)="addAppModelEleRf.openDialog()"><i class="iconfont icon-plus"></i>添加应用链路</button>
+          <button class="btn-primary" [disabled]="!selectedApps.length" (click)="deleteAppModelClick()">删除</button>
+        </div>
+      </div>
+    </li>
+-->
+
+    <li *ngIf="currentTab.value === 'tunnelManage'" class="item">
+      <h3>专线纳管</h3>
+      <p>
+        <span class="name" [ngStyle]="{width: '110px'}">启用专线纳管:</span>
+        <span class="model">
+          <app-el-switch [ngStyle]="{top:'-1px',position:'relative'}" [appToolTip]="sdwanTunnelManageState ? '已启用' : '已禁用'"
+                           [(ngModel)]="sdwanTunnelManageState" active-color="#13ce66" (modelChange)="changeSdwanTunnelManageState($event)"
+                           inactive-color="#d9534f"></app-el-switch>
+        </span>
+      </p>
+      <p *ngIf="sdwanTunnelManageInfo?.ip">
+        <span class="name" [ngStyle]="{width: '110px'}">ip:</span>
+        <span class="model">
+          {{sdwanTunnelManageInfo?.ip}}
+        </span>
+      </p>
+      <app-bottom-comment [comment]="'注：专线纳管用于CPE采用SDWAN专线接入方式时当互联网线路故障断开，通过专线网络和控制器互通。'"></app-bottom-comment>
+    </li>
+
+  </ul>
+</app-right-modal>
+
+<app-firewall-list #firewallModel [isModel]="true" [selectedItem]="selectedItem" [resourceQuotaNumber]="resourceQuota?.firewallModelNum"
+                   (done)="firewallDone($event)"></app-firewall-list>
+<app-common-window #deleteFirewallModel [title]="deleteFirewallCommonOption.title"
+                   [message]="deleteFirewallCommonOption.message" (done)="deleteFirewallDone()"></app-common-window>
+<app-common-window #firewallAttentionModel [title]="firewallAttentionOption.title"
+                   [message]="firewallAttentionOption.message" (cancelDone)="firewallAttentionCancelDone()"
+                   (done)="firewallAttentionDone()"></app-common-window>
+<app-qos-list #qosModel [isModel]="true" [selectedItem]="selectedItem" [resourceQuotaNumber]="resourceQuota?.qosModelNum"
+              (done)="qosDone($event)"></app-qos-list>
+<app-common-window #deleteQosModel [title]="deleteQosCommonOption.title" [message]="deleteQosCommonOption.message"
+                   (done)="deleteQosDone()"></app-common-window>
+<app-network-add-app-model #addAppModel [selectedItem]="selectedItem" (done)="addAppModelDone($event)"></app-network-add-app-model>
+<app-common-window #deleteAppModel [title]="deleteAppCommonOption.title"
+                   [message]="deleteAppCommonOption.message" (done)="deleteAppDone()"></app-common-window>
+<app-ce-application-link-detail-list #ailDetailList [selecedItem]="selectedAil" [isModel]="true"
+                                     (done)="updateApplicationLinkDone($event)"></app-ce-application-link-detail-list>
+<app-common-window #ailDetailDelete [title]="deleteAppDefinitionCommonOption.title"
+                   [message]="deleteAppDefinitionCommonOption.message"
+                   (done)="deleteAppDefinitionDone()"></app-common-window>
+
+<app-loading-window #loading></app-loading-window>
+
+<app-network-update-application-name #networkUpdateApplicationName  [selectedAppItem]="selectedApplication"
+                                     (done)="updateApplicationNameDone($event)"></app-network-update-application-name>
+<app-common-window #updateSdwanTunnelManage [title]="updateSdwanTunnelManageOption.title" [message]="updateSdwanTunnelManageOption.message" (cancelDone)="updateSdwanTunnelManageCancelDone()" (done)="updateSdwanTunnelManageDone()"></app-common-window>
