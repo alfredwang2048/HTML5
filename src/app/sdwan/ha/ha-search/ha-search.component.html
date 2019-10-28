@@ -1,7 +1,0 @@
-<div class="node-search-wrapper">
-  <div class="account-search">
-    账户名：<app-search-account [(selectedAccount)]="selectedAccount"></app-search-account>
-  </div>
-  <app-relate-input class="node-relate" [model]="relateOptions" [relateName]="searchInitObj.name" [relateValue]="searchInitObj.value" (relateChange)="relateChange($event)"></app-relate-input>
-  <button class="btn-primary" (click)="searchHandler()">查询</button>
-</div>

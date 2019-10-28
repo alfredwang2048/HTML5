@@ -1,9 +1,0 @@
-<div class="w-dropdown" [ngStyle]="{'padding':inputParams?.padding}">
-  <span class="w-dropdown-toggle" (click)="openMenu()">
-    <ng-content select="[drop-type=toggle]"></ng-content>
-    <i class="iconfont" [ngClass]="{'icon-caret': !showMenu,'icon-up': showMenu}" [ngStyle]="{color: iconColor}"></i>
-  </span>
-  <div class="w-dropdown-menu" [@dropAnimation]="showMenu" (click)="closeMenu()">
-    <ng-content select="[drop-type=menu]"></ng-content>
-  </div>
-</div>

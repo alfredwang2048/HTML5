@@ -1,5 +1,0 @@
-<div class="node-wrapper" #nodeWrapper [ngStyle]="{'left.px': model.x, 'top.px': model.y, cursor: cursor, color: model.color || fontColor}" (mouseenter)="enterHandler()" (mouseleave)="leaveHandler()" draggable="true">
-  <div class="iconfont" [ngClass]="model.iconClass" [ngStyle]="{'width.px': this.width, 'height.px': this.height}"></div>
-  <div class="text" *ngIf="model.name">{{model.name}}<br/>{{ model.ceMasterIp }}</div>
-</div>
-<app-topo-tooltip [model]="model" [left]="tipLeft" [top]="tipTop" [(move)]="moveTip" [(show)]="showTip" [maxWidth]="maxWidth" [maxHeight]="maxHeight"  *ngIf="model.topoType === 'out'"></app-topo-tooltip>

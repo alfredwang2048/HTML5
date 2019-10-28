@@ -1,8 +1,0 @@
-<div class="date-picker-wrapper" (click)="propagationHandle($event)">
-  <div class="input-wrapper">
-    <input class="form-control" type="text" [placeholder]="placeholder" [readonly]="readonly" [value]="model" (focus)="focusHandle()" (change)="inputChangeHandle($event.target.value)">
-    <i class="clear" (click)="clearHandle($event)" *ngIf="clearable && this.model">&times;</i>
-    <i class="iconfont icon-calendar" (click)="iconClickHandle()"></i>
-  </div>
-  <app-date-panel class="panel-host" [show]="showPanelPicker" [width]="panelWidth" [model]="value" (modelChange)="dateChangeHandle($event)"></app-date-panel>
-</div>

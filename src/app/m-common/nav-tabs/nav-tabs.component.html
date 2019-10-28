@@ -1,3 +1,0 @@
-<ul class="tab-list" [ngStyle]="style">
-  <li [style.width]="width" *ngFor="let item of lists" class="tab-item" (click)="selectTab(item)" [ngClass]="{'active':model?.value === item.value}" >{{item.text}}</li>
-</ul>
