@@ -1,42 +1,6 @@
 {
   "/account/api": {
-    "target": "http://192.168.211.72",
-    "secure": false
-  },
-  "/tunnel/api": {
-    "target": "http://192.168.211.72",
-    "secure": false
-  },
-  "/billing/api": {
-    "target": "http://192.168.211.72",
-    "secure": false
-  },
-  "/boss/account": {
-    "target": "http://192.168.211.72",
-    "secure": false
-  },
-  "/sdwan/api": {
-    "target": "http://192.168.211.72",
-    "secure": false
-  },
-  "/cxpstatics": {
-    "target": "http://192.168.211.72",
-    "secure": false
-  },
-  "/spm/api": {
-    "target": "http://192.168.211.72",
-    "secure": false
-  },
-  "/alarm/api": {
-    "target": "http://192.168.211.72",
-    "secure": false
-  },
-  "/api/query": {
-    "target": "http://192.168.211.72:4242",
-    "secure": false
-  },
-  "/api/v2/query": {
-    "target": "http://192.168.211.72:4242",
+    "target": "http://49.235.196.155",
     "secure": false
   }
 }

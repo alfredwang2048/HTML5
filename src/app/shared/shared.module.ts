@@ -2,6 +2,10 @@ import {ModuleWithProviders, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MCommonModule} from '../m-common/m-common.module';
+import {WindowService} from './window.service';
+import {DocumentService} from './document.service';
+import {WCookiesService} from './w-cookies.service';
+
 export function getDocument(): any {
   return document;
 }
@@ -29,6 +33,15 @@ export class SharedModule {
     return {
       ngModule: SharedModule,
       providers: [
+        {
+          provide: WindowService,
+          useFactory: getWindow
+        },
+        {
+          provide: DocumentService,
+          useFactory: getDocument
+        },
+        WCookiesService
       ]
     };
   }
